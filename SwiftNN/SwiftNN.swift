@@ -1,21 +1,18 @@
-//
-//  SwiftNN.swift
-//  SwiftNN
-//
-//  Created by Davyn Monagle on 1/3/2026.
-//
-
 import Foundation
-internal import Surge
+import Surge
 
-
-// MARK: Protocols
+// MARK:- Talent Protocol
 
 /// A protocl that has 2 functions of `Encode` and `Decode` so that the model can take in different inputs and output different outputs.
 ///
 /// There are 2 generics of `Input` and `Output` so that the model can take in different types you teach it, so it could be a `String` or an `Int` for instance.
 
 protocol Talent {
+    /// Tokens or the possible classification for a type could be
+    ///
+    /// Tokens are used for the possible outcomes of a prediction. Usually models return an array of predictions, and the highest value is the most likely output according to the model. We can then find out what value it thinks is the most likely outcome by looking up it's index in the tokens variable.
+    
+    var tokens: [Output] { get set }
     
     /// Input type for the model
     ///
@@ -23,7 +20,7 @@ protocol Talent {
     
     associatedtype Input
     
-    /// Output type for the model
+    /// Output type for the `Network`
     ///
     /// Generic type for `Talent` so that the `Network` can output any output you want it to.
     
@@ -37,10 +34,9 @@ protocol Talent {
     
     /// `decode` function inside of `Talent`
     ///
-    /// The function is used so that
+    /// The function is used so that the `Network` is able to turn the output matrix back into something usable.
     
-    func decode(_ output: Matrix<Double>) -> Output
-    
+    func decode(_ output: [Double]) -> Output
 }
 
 
@@ -54,36 +50,58 @@ protocol Talent {
 /// prediction and backpropagation during training.
 
 protocol Network {
-    /// Weights for the `Network` to use
-    ///
-    /// A simple weights variable, for the `Network` to use to train and predict.
-    ///
-    /// It uses a `Matrix<Double>` type.
-    
+    var talent: any Talent { get }
     var weights: Matrix<Double> { get set }
-    /// Biases for the model to use
-    ///
-    /// A simple bias variable for the `Network` to use to train and predict.
-    ///
-    /// It uses a `Matrix<Double>` type.
-    
     var bias: Matrix<Double> { get set }
     
     /// `train()` function
     ///
     /// Takes in a `Matrix<Double>` as input, and a target input of the same type.
     
-    func train(input: Matrix<Double>, target: Matrix<Double>)
+    mutating func train(input: Matrix<Double>, target: Matrix<Double>)
     
     /// `predict()` function
     ///
     /// Takes in a `Matrix<Double>` type and returns a `Matrix<Double>`.
     
     func predict(input: Matrix<Double>) -> Matrix<Double>
-    
 }
-
 
 // This is so that the Network can also be called Model if that is more comfortable for users.
 typealias Model = Network
 
+
+struct NumberRecognitionTalent: Talent {
+    var tokens: [Int] = [1, 2, 3, 4, 5, 6, 7, 8, 9]
+    
+    
+    typealias Input = [Double]
+    typealias Output = Int
+    
+    func encode(_ input: [Double]) -> Matrix<Double> {
+        // Flattened 28x28 array -> 28x28 matrix
+        return Matrix(rows: 28, columns: 28, grid: input)
+    }
+    
+    func decode(_ output: [Double]) -> Int {
+        // Return index of the max value (predicted digit)
+        return tokens[output.firstIndex(of: output.max() ?? 0) ?? 0]
+    }
+}
+
+
+struct BasicModel: Network {
+    
+    var talent: any Talent
+    var weights: Matrix<Double>
+    var bias: Matrix<Double>
+    
+    mutating func train(input: Matrix<Double>, target: Matrix<Double>) {
+        
+    }
+    
+    func predict(input: Matrix<Double>) -> Matrix<Double> {
+        // Simple forward pass: weights * input + bias
+        return (weights * input) + bias
+    }
+}
