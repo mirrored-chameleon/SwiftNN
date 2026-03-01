@@ -50,11 +50,6 @@
 			path = SwiftNNTests;
 			sourceTree = "<group>";
 		};
-		8B2177892F5415FB000F6A1A /* SwiftNNApp */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = SwiftNNApp;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +84,6 @@
 			children = (
 				8B21775F2F54111E000F6A1A /* SwiftNN */,
 				8B21776C2F54111E000F6A1A /* SwiftNNTests */,
-				8B2177892F5415FB000F6A1A /* SwiftNNApp */,
 				8B21775E2F54111E000F6A1A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -132,7 +126,6 @@
 			);
 			fileSystemSynchronizedGroups = (
 				8B21775F2F54111E000F6A1A /* SwiftNN */,
-				8B2177892F5415FB000F6A1A /* SwiftNNApp */,
 			);
 			name = SwiftNN;
 			packageProductDependencies = (
@@ -176,9 +169,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				8B2177892F5415FB000F6A1A /* SwiftNNApp */,
 			);
 			name = SwiftNNApp;
 			packageProductDependencies = (

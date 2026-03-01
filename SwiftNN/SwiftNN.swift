@@ -29,13 +29,15 @@ protocol Talent {
     
     associatedtype Output
     
-    /// `Encode` function inside of `Talent`
+    /// `encode` function inside of `Talent`
     ///
-    /// The function is used so that the `Model` is able to encode any type you want it to.
+    /// The function is used so that the `Network` is able to encode any type you want it to.
     
     func encode(_ input: Input) -> Matrix<Double>
     
-    
+    /// `decode` function inside of `Talent`
+    ///
+    /// The function is used so that
     
     func decode(_ output: Matrix<Double>) -> Output
     
@@ -52,7 +54,7 @@ protocol Talent {
 /// prediction and backpropagation during training.
 
 protocol Network {
-    /// Weights for the model to use
+    /// Weights for the `Network` to use
     ///
     /// A simple weights variable, for the `Network` to use to train and predict.
     ///
