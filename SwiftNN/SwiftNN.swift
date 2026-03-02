@@ -1,5 +1,5 @@
 import Foundation
-import Surge
+internal import Surge
 
 // MARK:- Talent Protocol
 
@@ -36,7 +36,7 @@ protocol Talent {
     ///
     /// The function is used so that the `Network` is able to turn the output matrix back into something usable.
     
-    func decode(_ output: [Double]) -> Output
+    func decode(_ output: Matrix<Double>) -> Output
 }
 
 
@@ -83,9 +83,20 @@ struct NumberRecognitionTalent: Talent {
         return Matrix(rows: 28, columns: 28, grid: input)
     }
     
-    func decode(_ output: [Double]) -> Int {
-        // Return index of the max value (predicted digit)
-        return tokens[output.firstIndex(of: output.max() ?? 0) ?? 0]
+    func decode(_ output: Matrix<Double>) -> Int {
+        var outputFlattened: [Double] = []
+        
+        for rowIndex in 0..<output.rows {
+            for columnIndex in 0..<output.columns {
+                outputFlattened.append(output[rowIndex, columnIndex])
+            }
+        }
+        
+        if let maxIndex = outputFlattened.firstIndex(of: outputFlattened.max() ?? 0.0) {
+            return tokens[maxIndex]
+        } else {
+            return tokens.first ?? 0
+        }
     }
 }
 
@@ -95,9 +106,30 @@ struct BasicModel: Network {
     var talent: any Talent
     var weights: Matrix<Double>
     var bias: Matrix<Double>
+    var learningRate = 0.01
     
-    mutating func train(input: Matrix<Double>, target: Matrix<Double>) {
+    mutating func train(input inputMatrix: Matrix<Double>, target targetMatrix: Matrix<Double>) {
+        // Forward pass
+        let predictedMatrix = predict(input: inputMatrix)
         
+        // Calculate the difference between target and prediction
+        let errorMatrix = targetMatrix - predictedMatrix
+        
+        // Update weights manually
+        for rowIndex in 0..<weights.rows {
+            for columnIndex in 0..<weights.columns {
+                let errorValue = errorMatrix[rowIndex, 0]
+                let inputValue = inputMatrix[columnIndex, 0]
+                let weightUpdate = learningRate * errorValue * inputValue
+                weights[rowIndex, columnIndex] += weightUpdate
+            }
+        }
+        
+        // Update bias
+        for biasRowIndex in 0..<bias.rows {
+            let biasUpdate = learningRate * errorMatrix[biasRowIndex, 0]
+            bias[biasRowIndex, 0] += biasUpdate
+        }
     }
     
     func predict(input: Matrix<Double>) -> Matrix<Double> {
