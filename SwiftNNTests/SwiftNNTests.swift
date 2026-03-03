@@ -10,86 +10,64 @@ import Surge
 @testable import SwiftNN
 import Foundation
 
-// MARK: - Lightweight Talent for testing
+struct EnglishVowelTalent: Talent {
 
-struct SimpleBinaryTalent: Talent {
-    var tokens: [Int] = [0, 1] // possible outputs
-    
-    typealias Input = [Double]
+    var tokens: [Int] = [0, 1] // 0 = consonant, 1 = vowel
+
+    typealias Input = Character
     typealias Output = Int
     
-    func encode(_ input: [Double]) -> Matrix<Double> {
-        // Simple 1xN matrix
-        return Matrix(rows: input.count, columns: 1, grid: input)
+    // Encode letter as one-hot vector
+    func encode(_ input: Character) -> Matrix<Double> {
+        let letters = Array("abcdefghijklmnopqrstuvwxyz")
+        var vector = Array(repeating: 0.0, count: letters.count)
+        if let index = letters.firstIndex(of: Character(input.lowercased())) {
+            vector[index] = 1.0
+        }
+        return Matrix(rows: vector.count, columns: 1, grid: vector)
     }
     
-    func decode(_ output: Matrix<Double>) -> Int {
-        var totalSum: Double = 0.0
-        
-        for rowIndex in 0..<output.rows {
-            for columnIndex in 0..<output.columns {
-                totalSum += output[rowIndex, columnIndex]
-            }
-        }
-        
-        return totalSum > 0.5 ? 1 : 0
+    // Decode output: >0.5 = vowel, else consonant
+    internal func decode(_ output: Matrix<Double>) -> Int {
+        let value = output[0, 0]
+        return value > 0.5 ? 1 : 0
     }
 }
 
-// MARK: - Test Script
-
-func runSimpleModelTest() {
-    // Create talent
-    let testTalent = SimpleBinaryTalent()
+func testEnglishVowelModel() {
     
-    // Define a tiny 2-input model: 1 output x 2 inputs
-    var testModel = BasicModel(
-        talent: testTalent,
-        weights: Matrix(rows: 1, columns: 2, grid: [0.0, 0.0]),
-        bias: Matrix(rows: 1, columns: 1, grid: [0.0]),
-        learningRate: 0.1
-    )
+    let talent = EnglishVowelTalent()
     
-    // Training dataset: input -> target
-    let trainingInputs: [[Double]] = [
-        [0, 0],
-        [0, 1],
-        [1, 0],
-        [1, 1]
-    ]
-    let trainingTargets: [Double] = [
-        0, // 0 OR 0 = 0
-        1, // 0 OR 1 = 1
-        1, // 1 OR 0 = 1
-        1  // 1 OR 1 = 1
-    ]
+    // Network: 26 input → 8 hidden → 1 output
+    var model = BasicModel(layers: [26, 8, 1], talent: talent)
     
-    // Convert to matrices
-    let inputMatrices = trainingInputs.map { testTalent.encode($0) }
-    let targetMatrices = trainingTargets.map { Matrix(rows: 1, columns: 1, grid: [$0]) }
+    // Training data
+    let letters = Array("abcdefghijklmnopqrstuvwxyz")
+    let targets: [Double] = letters.map { "aeiou".contains($0) ? 1.0 : 0.0 }
     
-    // Train model for 500 epochs
+    // Train
     for _ in 0..<500 {
-        for (inputMatrix, targetMatrix) in zip(inputMatrices, targetMatrices) {
-            testModel.train(input: inputMatrix, target: targetMatrix)
+        for (letter, target) in zip(letters, targets) {
+            model.train(
+                input: talent.encode(letter),
+                target: Matrix(rows: 1, columns: 1, grid: [target])
+            )
         }
     }
     
-    // Test the model
-    print("Testing trained model:")
-    for (input, inputMatrix) in zip(trainingInputs, inputMatrices) {
-        let predictedMatrix = testModel.predict(input: inputMatrix)
-        let predictedValue = testTalent.decode(predictedMatrix)
-        print("Input: \(input) -> Prediction: \(predictedValue)")
+    // Test
+    for letter in letters {
+        let predictionMatrix = model.predict(input: talent.encode(letter))
+        let prediction = talent.decode(predictionMatrix)
+        print("Letter: \(letter) → Prediction: \(prediction == 1 ? "Vowel" : "Consonant")")
     }
 }
-
 
 struct SwiftNNTests {
 
     @Test func example() async throws {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        runSimpleModelTest()
+        testEnglishVowelModel()
     }
 
 }
