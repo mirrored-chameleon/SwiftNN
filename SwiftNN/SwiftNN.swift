@@ -1,3 +1,10 @@
+//
+//  SwiftNNTests.swift
+//  SwiftNNTests
+//
+//  Created by Davyn Monagle on 1/3/2026.
+//
+
 import Foundation
 internal import Surge
 
@@ -7,34 +14,6 @@ func relu(_ value: Double) -> Double {
 
 func reluDerivative(_ value: Double) -> Double {
     return value > 0 ? 1.0 : 0.0
-}
-
-func softmax(_ values: [Double]) -> [Double] {
-    let maxValue = values.max() ?? 0
-    let exps = values.map { exp($0 - maxValue) }
-    let sumExps = exps.reduce(0, +)
-    return exps.map { $0 / sumExps }
-}
-
-func crossEntropyLoss(predicted: [Double], target: [Double]) -> Double {
-    zip(predicted, target).reduce(0) { acc, pair in
-        let (p, t) = pair
-        return acc - t * log(p + 1e-12)
-    }
-}
-
-func flattenMatrix(_ matrix: Matrix<Double>) -> [Double] {
-    var result: [Double] = []
-    for r in 0..<matrix.rows {
-        for c in 0..<matrix.columns {
-            result.append(matrix[r,c])
-        }
-    }
-    return result
-}
-
-func matrixFromVector(_ values: [Double]) -> Matrix<Double> {
-    Matrix(rows: values.count, columns: 1, grid: values)
 }
 
 // MARK:- Talent Protocol
@@ -108,27 +87,164 @@ typealias Model = Network
 
 
 struct BasicModel: Network {
+    
     var talent: any Talent
-    var weights: [[Matrix<Double>]]       // weights[layer][neuron]
-    var bias: [Matrix<Double>]            // biases[layer]
-    var layerOutputs: [[Double]]          // post-activation values
-    var layerWeightedInputs: [[Double]]   // pre-activation values
-    var learningRate: Double = 0.1
-
+    var weights: [[Matrix<Double>]]
+    var bias: [Matrix<Double>]
+    var layerOutputs: [[Double]]
+    var learningRate = 0.01
+    
+    mutating func train(input inputMatrix: Matrix<Double>, target targetMatrix: Matrix<Double>) {
+        
+        // 1️⃣ Forward pass
+        let predictedMatrix = predict(input: inputMatrix)
+        
+        // 2️⃣ Flatten target and predicted for easy indexing
+        var predictedValues: [Double] = []
+        var targetValues: [Double] = []
+        
+        for row in 0..<predictedMatrix.rows {
+            for col in 0..<predictedMatrix.columns {
+                predictedValues.append(predictedMatrix[row, col])
+            }
+        }
+        
+        for row in 0..<targetMatrix.rows {
+            for col in 0..<targetMatrix.columns {
+                targetValues.append(targetMatrix[row, col])
+            }
+        }
+        
+        // 3️⃣ Compute output layer error
+        var layerErrors: [[Double]] = Array(repeating: [], count: weights.count)
+        
+        let outputLayerIndex = weights.count - 1
+        var outputLayerError: [Double] = []
+        
+        for i in 0..<predictedValues.count {
+            // For output layer, derivative is 1 (linear output)
+            let error = targetValues[i] - predictedValues[i]
+            outputLayerError.append(error)
+        }
+        layerErrors[outputLayerIndex] = outputLayerError
+        
+        // 4️⃣ Backpropagate through hidden layers
+        for layerIndex in (0..<weights.count-1).reversed() {
+            var currentLayerError: [Double] = Array(repeating: 0.0, count: weights[layerIndex].count)
+            
+            for neuronIndex in 0..<weights[layerIndex].count {
+                var errorSum: Double = 0.0
+                // Each neuron error = sum of next layer neuron errors * weight * ReLU derivative
+                for nextNeuronIndex in 0..<weights[layerIndex+1].count {
+                    let nextError = layerErrors[layerIndex+1][nextNeuronIndex]
+                    let weightToNextNeuron = weights[layerIndex+1][nextNeuronIndex][0, neuronIndex]
+                    errorSum += nextError * weightToNextNeuron
+                }
+                // Multiply by ReLU derivative of neuron output
+                let neuronOutput = layerOutputs[layerIndex][neuronIndex]
+                currentLayerError[neuronIndex] = errorSum * reluDerivative(neuronOutput)
+            }
+            layerErrors[layerIndex] = currentLayerError
+        }
+        
+        // 5️⃣ Update weights and biases
+        for layerIndex in 0..<weights.count {
+            let inputsToUse: [Double] = layerIndex == 0
+                ? (0..<inputMatrix.rows).flatMap { row in
+                    (0..<inputMatrix.columns).map { col in inputMatrix[row, col] }
+                }
+                : layerOutputs[layerIndex-1] // previous layer outputs
+            
+            for neuronIndex in 0..<weights[layerIndex].count {
+                for inputIndex in 0..<inputsToUse.count {
+                    let gradient = learningRate * layerErrors[layerIndex][neuronIndex] * inputsToUse[inputIndex]
+                    weights[layerIndex][neuronIndex][0, inputIndex] += gradient
+                }
+                // Update bias
+                let biasGradient = learningRate * layerErrors[layerIndex][neuronIndex]
+                bias[layerIndex][neuronIndex, 0] += biasGradient
+            }
+        }
+    }
+    
+    mutating func predict(input inputMatrix: Matrix<Double>) -> Matrix<Double> {
+        
+        // Convert input matrix into flat array
+        var currentLayerInputValues: [Double] = []
+        
+        for rowIndex in 0..<inputMatrix.rows {
+            for columnIndex in 0..<inputMatrix.columns {
+                currentLayerInputValues.append(inputMatrix[rowIndex, columnIndex])
+            }
+        }
+        
+        // Clear previous outputs
+        layerOutputs.removeAll()
+        
+        // Loop through each layer
+        for layerIndex in 0..<weights.count {
+            
+            var currentLayerOutputValues: [Double] = []
+            
+            let isFinalLayer = (layerIndex == weights.count - 1)
+            
+            // Loop through each neuron in the layer
+            for neuronIndex in 0..<weights[layerIndex].count {
+                
+                var weightedSum: Double = 0.0
+                
+                // Multiply each input by corresponding weight
+                for inputIndex in 0..<currentLayerInputValues.count {
+                    
+                    let weightValue = weights[layerIndex][neuronIndex][0, inputIndex]
+                    let inputValue = currentLayerInputValues[inputIndex]
+                    
+                    weightedSum += weightValue * inputValue
+                }
+                
+                // Add bias
+                let biasValue = bias[layerIndex][neuronIndex, 0]
+                weightedSum += biasValue
+                
+                // Apply ReLU only if NOT final layer
+                if !isFinalLayer {
+                    weightedSum = relu(weightedSum)
+                }
+                
+                currentLayerOutputValues.append(weightedSum)
+            }
+            
+            // Store this layer’s outputs
+            layerOutputs.append(currentLayerOutputValues)
+            
+            // Output becomes input to next layer
+            currentLayerInputValues = currentLayerOutputValues
+        }
+        
+        // Convert final output array back into Matrix
+        return Matrix(
+            rows: currentLayerInputValues.count,
+            columns: 1,
+            grid: currentLayerInputValues
+        )
+    }
+    
     init(layers: [Int], talent: any Talent) {
         self.talent = talent
-        self.learningRate = 0.1
+        self.learningRate = 0.01
         self.layerOutputs = []
-        self.layerWeightedInputs = []
+        
         self.weights = []
         self.bias = []
-
+        
         for i in 0..<(layers.count - 1) {
             let inputSize = layers[i]
             let outputSize = layers[i + 1]
-
+            
+            // Create weight matrix for each neuron in this layer
             var layerWeights: [Matrix<Double>] = []
             for _ in 0..<outputSize {
+                // 1×inputSize random weight matrix
                 let weightMatrix = Matrix(
                     rows: 1,
                     columns: inputSize,
@@ -137,91 +253,14 @@ struct BasicModel: Network {
                 layerWeights.append(weightMatrix)
             }
             weights.append(layerWeights)
-
+            
+            // Bias for this layer
             let layerBias = Matrix(
                 rows: outputSize,
                 columns: 1,
                 grid: Array(repeating: 0.0, count: outputSize)
             )
             bias.append(layerBias)
-        }
-    }
-
-    mutating func predict(input inputMatrix: Matrix<Double>) -> Matrix<Double> {
-        var currentInputs = flattenMatrix(inputMatrix)
-        layerOutputs.removeAll()
-        layerWeightedInputs.removeAll()
-
-        for layerIndex in 0..<weights.count {
-            var weightedValues: [Double] = []
-            var activatedValues: [Double] = []
-
-            let isFinalLayer = layerIndex == weights.count - 1
-
-            for neuronIndex in 0..<weights[layerIndex].count {
-                var sum: Double = 0
-                for inputIndex in 0..<currentInputs.count {
-                    sum += weights[layerIndex][neuronIndex][0,inputIndex] * currentInputs[inputIndex]
-                }
-                sum += bias[layerIndex][neuronIndex,0]
-                weightedValues.append(sum)
-
-                if isFinalLayer {
-                    activatedValues.append(sum) // softmax applied later
-                } else {
-                    activatedValues.append(relu(sum))
-                }
-            }
-
-            if isFinalLayer {
-                activatedValues = softmax(activatedValues)
-            }
-
-            layerWeightedInputs.append(weightedValues)
-            layerOutputs.append(activatedValues)
-            currentInputs = activatedValues
-        }
-
-        return matrixFromVector(currentInputs)
-    }
-
-    mutating func train(input inputMatrix: Matrix<Double>, target targetMatrix: Matrix<Double>) {
-        let predictedMatrix = predict(input: inputMatrix)
-        let predicted = flattenMatrix(predictedMatrix)
-        let target = flattenMatrix(targetMatrix)
-
-        var layerErrors: [[Double]] = Array(repeating: [], count: weights.count)
-
-        // Softmax + cross-entropy derivative
-        layerErrors[weights.count - 1] = zip(predicted, target).map { $0 - $1 }
-
-        // Backpropagate through hidden layers
-        if weights.count > 1 {
-            for layerIndex in stride(from: weights.count - 2, through: 0, by: -1) {
-                var currentErrors = Array(repeating: 0.0, count: weights[layerIndex].count)
-                for neuronIndex in 0..<weights[layerIndex].count {
-                    var sumError = 0.0
-                    for nextNeuronIndex in 0..<weights[layerIndex+1].count {
-                        sumError += layerErrors[layerIndex+1][nextNeuronIndex] *
-                                    weights[layerIndex+1][nextNeuronIndex][0,neuronIndex]
-                    }
-                    currentErrors[neuronIndex] = sumError * reluDerivative(layerWeightedInputs[layerIndex][neuronIndex])
-                }
-                layerErrors[layerIndex] = currentErrors
-            }
-        }
-
-        // Update weights and biases
-        for layerIndex in 0..<weights.count {
-            let inputs = layerIndex == 0 ? flattenMatrix(inputMatrix) : layerOutputs[layerIndex-1]
-            for neuronIndex in 0..<weights[layerIndex].count {
-                for inputIndex in 0..<inputs.count {
-                    let gradient = learningRate * layerErrors[layerIndex][neuronIndex] * inputs[inputIndex]
-                    weights[layerIndex][neuronIndex][0,inputIndex] += gradient
-                }
-                let biasGradient = learningRate * layerErrors[layerIndex][neuronIndex]
-                bias[layerIndex][neuronIndex,0] += biasGradient
-            }
         }
     }
 }
