@@ -10,56 +10,110 @@ import Surge
 @testable import SwiftNN
 import Foundation
 
-struct EnglishVowelTalent: Talent {
-
-    var tokens: [Int] = [0, 1] // 0 = consonant, 1 = vowel
-
-    typealias Input = Character
-    typealias Output = Int
+struct XORTalent: Talent {
     
-    // Encode letter as one-hot vector
-    func encode(_ input: Character) -> Matrix<Double> {
-        let letters = Array("abcdefghijklmnopqrstuvwxyz")
-        var vector = Array(repeating: 0.0, count: letters.count)
-        if let index = letters.firstIndex(of: Character(input.lowercased())) {
-            vector[index] = 1.0
-        }
-        return Matrix(rows: vector.count, columns: 1, grid: vector)
+    typealias Input = (Double, Double)
+    typealias Output = Double
+    
+    var tokens: [Double] = [0, 1]
+    
+    func encode(_ input: Input) -> Matrix<Double> {
+        
+        return Matrix(
+            rows: 2,
+            columns: 1,
+            grid: [input.0, input.1]
+        )
     }
     
-    // Decode output: >0.5 = vowel, else consonant
-    internal func decode(_ output: Matrix<Double>) -> Int {
-        let value = output[0, 0]
-        return value > 0.5 ? 1 : 0
+    func decode(_ output: Matrix<Double>) -> Double {
+        
+        let values = flatten(output)
+        
+        let index = argmax(values)
+        
+        return index == 1 ? 1.0 : 0.0
     }
 }
 
-func testEnglishVowelModel() {
+func testBasicModelXOR() {
     
-    let talent = EnglishVowelTalent()
+    print("Starting XOR Test")
     
-    // Network: 26 input → 8 hidden → 1 output
-    var model = BasicModel(layers: [26, 8, 1], talent: talent)
+    let talent = XORTalent()
     
-    // Training data
-    let letters = Array("abcdefghijklmnopqrstuvwxyz")
-    let targets: [Double] = letters.map { "aeiou".contains($0) ? 1.0 : 0.0 }
+    var model = BasicModel(
+        layers: [2, 4, 2], // IMPORTANT: 2 outputs
+        talent: talent
+    )
     
-    // Train
-    for _ in 0..<500 {
-        for (letter, target) in zip(letters, targets) {
+    let trainingPairs: [(Matrix<Double>, Matrix<Double>)] = [
+        
+        (
+            Matrix(rows: 2, columns: 1, grid: [0,0]),
+            Matrix(rows: 2, columns: 1, grid: [1,0])
+        ),
+        
+        (
+            Matrix(rows: 2, columns: 1, grid: [0,1]),
+            Matrix(rows: 2, columns: 1, grid: [0,1])
+        ),
+        
+        (
+            Matrix(rows: 2, columns: 1, grid: [1,0]),
+            Matrix(rows: 2, columns: 1, grid: [0,1])
+        ),
+        
+        (
+            Matrix(rows: 2, columns: 1, grid: [1,1]),
+            Matrix(rows: 2, columns: 1, grid: [1,0])
+        )
+        
+    ]
+    
+    print("Predictions BEFORE training")
+    
+    for (inputMatrix, _) in trainingPairs {
+        
+        let prediction = model.predict(input: inputMatrix)
+        
+        print(
+            inputMatrix[0,0],
+            inputMatrix[1,0],
+            "->",
+            flatten(prediction)
+        )
+    }
+    
+    for epoch in 0..<10000 {
+        
+        for (inputMatrix, targetMatrix) in trainingPairs {
+            
             model.train(
-                input: talent.encode(letter),
-                target: Matrix(rows: 1, columns: 1, grid: [target])
+                input: inputMatrix,
+                target: targetMatrix
             )
+        }
+        
+        if epoch % 2000 == 0 {
+            print("Epoch:", epoch)
         }
     }
     
-    // Test
-    for letter in letters {
-        let predictionMatrix = model.predict(input: talent.encode(letter))
-        let prediction = talent.decode(predictionMatrix)
-        print("Letter: \(letter) → Prediction: \(prediction == 1 ? "Vowel" : "Consonant")")
+    print("\nPredictions AFTER training")
+    
+    for (inputMatrix, _) in trainingPairs {
+        
+        let prediction = model.predict(input: inputMatrix)
+        
+        print(
+            inputMatrix[0,0],
+            inputMatrix[1,0],
+            "->",
+            flatten(prediction),
+            "decoded:",
+            talent.decode(prediction)
+        )
     }
 }
 
@@ -67,7 +121,7 @@ struct SwiftNNTests {
 
     @Test func example() async throws {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        testEnglishVowelModel()
+        testBasicModelXOR()
     }
 
 }
