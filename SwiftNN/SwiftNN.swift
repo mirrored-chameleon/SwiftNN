@@ -6,17 +6,17 @@
 //
 
 import Foundation
-internal import Surge
+import Surge
 
-func relu(_ inputValue: Double) -> Double {
+public func relu(_ inputValue: Double) -> Double {
     return max(0.0, inputValue)
 }
 
-func reluDerivative(_ inputValue: Double) -> Double {
+public func reluDerivative(_ inputValue: Double) -> Double {
     return inputValue > 0.0 ? 1.0 : 0.0
 }
 
-func softmax(_ inputValues: [Double]) -> [Double] {
+public func softmax(_ inputValues: [Double]) -> [Double] {
     
     let largestValue = inputValues.max() ?? 0.0
     
@@ -31,7 +31,7 @@ func softmax(_ inputValues: [Double]) -> [Double] {
     }
 }
 
-func argmax(_ values: [Double]) -> Int {
+public func argmax(_ values: [Double]) -> Int {
     
     var bestIndex = 0
     var bestValue = values[0]
@@ -49,7 +49,7 @@ func argmax(_ values: [Double]) -> Int {
     return bestIndex
 }
 
-func flatten(_ matrix: Matrix<Double>) -> [Double] {
+public func flatten(_ matrix: Matrix<Double>) -> [Double] {
     
     var flattenedValues: [Double] = []
     
@@ -73,7 +73,7 @@ func flatten(_ matrix: Matrix<Double>) -> [Double] {
 ///
 /// There are 2 generics of `Input` and `Output` so that the model can take in different types you teach it, so it could be a `String` or an `Int` for instance.
 
-protocol Talent {
+public protocol Talent {
     /// Tokens or the possible classification for a type could be
     ///
     /// Tokens are used for the possible outcomes of a prediction. Usually models return an array of predictions, and the highest value is the most likely output according to the model. We can then find out what value it thinks is the most likely outcome by looking up it's index in the tokens variable.
@@ -115,7 +115,7 @@ protocol Talent {
 /// Implementations are expected to perform forward propagation for
 /// prediction and backpropagation during training.
 
-protocol Network {
+public protocol Network {
     var talent: any Talent { get }
     var weights: [[Matrix<Double>]] { get set }
     var bias: [Matrix<Double>] { get set }
@@ -137,11 +137,11 @@ protocol Network {
 typealias Model = Network
 
 
-struct BasicModel: Network {
+public struct BasicModel: Network {
 
-    var talent: any Talent
-    var weights: [[Matrix<Double>]]
-    var bias: [Matrix<Double>]
+    public var talent: any Talent
+    public var weights: [[Matrix<Double>]]
+    public var bias: [Matrix<Double>]
     
     var layerOutputs: [[Double]] = []
     
@@ -149,7 +149,7 @@ struct BasicModel: Network {
     
     // MARK: - Prediction
     
-    mutating func predict(input inputMatrix: Matrix<Double>) -> Matrix<Double> {
+    mutating public func predict(input inputMatrix: Matrix<Double>) -> Matrix<Double> {
         
         var currentLayerInputs = flatten(inputMatrix)
         
@@ -203,7 +203,7 @@ struct BasicModel: Network {
     
     // MARK: - Training
     
-    mutating func train(
+    mutating public func train(
         input inputMatrix: Matrix<Double>,
         target targetMatrix: Matrix<Double>
     ) {
@@ -316,7 +316,7 @@ struct BasicModel: Network {
     
     // MARK: - Initializer
     
-    init(layers: [Int], talent: any Talent) {
+    public init(layers: [Int], talent: any Talent) {
         
         self.talent = talent
         self.weights = []

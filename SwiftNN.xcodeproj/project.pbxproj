@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		8B2177692F54111E000F6A1A /* SwiftNN.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B21775D2F54111E000F6A1A /* SwiftNN.framework */; };
 		8B21777F2F5414F8000F6A1A /* Surge in Frameworks */ = {isa = PBXBuildFile; productRef = 8B21777E2F5414F8000F6A1A /* Surge */; };
+		8BD136762F712D2500384D66 /* SwiftNN.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8B21775D2F54111E000F6A1A /* SwiftNN.framework */; };
+		8BD136772F712D2500384D66 /* SwiftNN.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8B21775D2F54111E000F6A1A /* SwiftNN.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -19,10 +21,17 @@
 			remoteGlobalIDString = 8B21775C2F54111E000F6A1A;
 			remoteInfo = SwiftNN;
 		};
+		8BD136782F712D2500384D66 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8B2177542F54111D000F6A1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8B21775C2F54111E000F6A1A;
+			remoteInfo = SwiftNN;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		8B2177862F5415FB000F6A1A /* CopyFiles */ = {
+		8BD136052F71288B00384D66 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -31,12 +40,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		8BD1367A2F712D2500384D66 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				8BD136772F712D2500384D66 /* SwiftNN.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		8B21775D2F54111E000F6A1A /* SwiftNN.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SwiftNN.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		8B2177682F54111E000F6A1A /* SwiftNNTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftNNTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		8B2177882F5415FB000F6A1A /* SwiftNNApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftNNApp; sourceTree = BUILT_PRODUCTS_DIR; };
+		8BD136072F71288B00384D66 /* SwiftNNApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SwiftNNApp; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -48,6 +68,11 @@
 		8B21776C2F54111E000F6A1A /* SwiftNNTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = SwiftNNTests;
+			sourceTree = "<group>";
+		};
+		8BD136082F71288B00384D66 /* SwiftNNApp */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = SwiftNNApp;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -69,10 +94,11 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8B2177852F5415FB000F6A1A /* Frameworks */ = {
+		8BD136042F71288B00384D66 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8BD136762F712D2500384D66 /* SwiftNN.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -84,6 +110,8 @@
 			children = (
 				8B21775F2F54111E000F6A1A /* SwiftNN */,
 				8B21776C2F54111E000F6A1A /* SwiftNNTests */,
+				8BD136082F71288B00384D66 /* SwiftNNApp */,
+				8BD136752F712D2500384D66 /* Frameworks */,
 				8B21775E2F54111E000F6A1A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -93,9 +121,16 @@
 			children = (
 				8B21775D2F54111E000F6A1A /* SwiftNN.framework */,
 				8B2177682F54111E000F6A1A /* SwiftNNTests.xctest */,
-				8B2177882F5415FB000F6A1A /* SwiftNNApp */,
+				8BD136072F71288B00384D66 /* SwiftNNApp */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8BD136752F712D2500384D66 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -158,23 +193,28 @@
 			productReference = 8B2177682F54111E000F6A1A /* SwiftNNTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		8B2177872F5415FB000F6A1A /* SwiftNNApp */ = {
+		8BD136062F71288B00384D66 /* SwiftNNApp */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8B21778C2F5415FB000F6A1A /* Build configuration list for PBXNativeTarget "SwiftNNApp" */;
+			buildConfigurationList = 8BD1360D2F71288B00384D66 /* Build configuration list for PBXNativeTarget "SwiftNNApp" */;
 			buildPhases = (
-				8B2177842F5415FB000F6A1A /* Sources */,
-				8B2177852F5415FB000F6A1A /* Frameworks */,
-				8B2177862F5415FB000F6A1A /* CopyFiles */,
+				8BD136032F71288B00384D66 /* Sources */,
+				8BD136042F71288B00384D66 /* Frameworks */,
+				8BD136052F71288B00384D66 /* CopyFiles */,
+				8BD1367A2F712D2500384D66 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				8BD136792F712D2500384D66 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8BD136082F71288B00384D66 /* SwiftNNApp */,
 			);
 			name = SwiftNNApp;
 			packageProductDependencies = (
 			);
 			productName = SwiftNNApp;
-			productReference = 8B2177882F5415FB000F6A1A /* SwiftNNApp */;
+			productReference = 8BD136072F71288B00384D66 /* SwiftNNApp */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -193,7 +233,7 @@
 					8B2177672F54111E000F6A1A = {
 						CreatedOnToolsVersion = 26.2;
 					};
-					8B2177872F5415FB000F6A1A = {
+					8BD136062F71288B00384D66 = {
 						CreatedOnToolsVersion = 26.2;
 					};
 				};
@@ -217,7 +257,7 @@
 			targets = (
 				8B21775C2F54111E000F6A1A /* SwiftNN */,
 				8B2177672F54111E000F6A1A /* SwiftNNTests */,
-				8B2177872F5415FB000F6A1A /* SwiftNNApp */,
+				8BD136062F71288B00384D66 /* SwiftNNApp */,
 			);
 		};
 /* End PBXProject section */
@@ -254,7 +294,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		8B2177842F5415FB000F6A1A /* Sources */ = {
+		8BD136032F71288B00384D66 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -268,6 +308,11 @@
 			isa = PBXTargetDependency;
 			target = 8B21775C2F54111E000F6A1A /* SwiftNN */;
 			targetProxy = 8B21776A2F54111E000F6A1A /* PBXContainerItemProxy */;
+		};
+		8BD136792F712D2500384D66 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8B21775C2F54111E000F6A1A /* SwiftNN */;
+			targetProxy = 8BD136782F712D2500384D66 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -399,6 +444,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = SwiftNN/SwiftNN.swift;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -443,6 +489,7 @@
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = SwiftNN/SwiftNN.swift;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
@@ -528,7 +575,7 @@
 			};
 			name = Release;
 		};
-		8B21778D2F5415FB000F6A1A /* Debug */ = {
+		8BD1360B2F71288B00384D66 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -541,7 +588,7 @@
 			};
 			name = Debug;
 		};
-		8B21778E2F5415FB000F6A1A /* Release */ = {
+		8BD1360C2F71288B00384D66 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
@@ -584,11 +631,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8B21778C2F5415FB000F6A1A /* Build configuration list for PBXNativeTarget "SwiftNNApp" */ = {
+		8BD1360D2F71288B00384D66 /* Build configuration list for PBXNativeTarget "SwiftNNApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				8B21778D2F5415FB000F6A1A /* Debug */,
-				8B21778E2F5415FB000F6A1A /* Release */,
+				8BD1360B2F71288B00384D66 /* Debug */,
+				8BD1360C2F71288B00384D66 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
