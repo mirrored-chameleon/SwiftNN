@@ -28,14 +28,18 @@ func applyTemperature(_ logits: [Double], temperature: Double) -> [Double] {
     return logits.map { $0 / temperature }
 }
 
+// A mirror for the forward tokens so you can decode the response from the model back into readable text.
 var backwardTokens: [Int: String] = [
     0: "<UNK>",
     1: "<START>",
     2: "<END>"
 ]
 
+// How many dimensions the embedding has. Each embedding corresponds to a word. The more dimensions they have, the more meaning a word has to the model. At the moment (as of writing) the embedding dimensions is equal to 32, so the model can train quicker, as the more dimensions an embedding has, the longer it takes training. The closer embeddings are to eachother. So for example, hello and hi will have very simmilar embeddings, since  they are synonyms.
 let embeddingDimensions = 32
 
+
+// The Matrix that stores all of the embeddings. The model expects up to 1000 words in it's vocabulary, as of writing, there are 706.
 var embeddings = Matrix(
     rows: 1000,
     columns: embeddingDimensions,
@@ -44,6 +48,7 @@ var embeddings = Matrix(
 
 // MARK: - HELPERS
 
+// Flattens Matrixes back into 2D arrays to use, so looping through Matrixes becomes a more streamline process.
 @inline(__always)
 func flattenMatrix(_ matrix: Matrix<Double>) -> [Double] {
     var result: [Double] = []
@@ -57,10 +62,12 @@ func flattenMatrix(_ matrix: Matrix<Double>) -> [Double] {
     return result
 }
 
+// Looks up a token id in the forward tokens array I explained earlier.
 func tokenID(_ token: String) -> Int {
     forwardTokens[token] ?? forwardTokens["<UNK>"]!
 }
 
+// This makes sure that the embeddings do not overflow in size, and if it does, increases the size of vocab, just incase.
 func ensureEmbeddingCapacity(for tokenIdentifier: Int) {
 
     if tokenIdentifier < embeddings.rows {
@@ -73,14 +80,12 @@ func ensureEmbeddingCapacity(for tokenIdentifier: Int) {
 
     newGrid.reserveCapacity(newRowCount * embeddingDimensions)
 
-    // Copy old values
     for rowIndex in 0..<embeddings.rows {
         for columnIndex in 0..<embeddingDimensions {
             newGrid.append(embeddings[rowIndex, columnIndex])
         }
     }
 
-    // Add new rows
     let additionalRows = newRowCount - embeddings.rows
 
     for _ in 0..<additionalRows {
@@ -96,6 +101,7 @@ func ensureEmbeddingCapacity(for tokenIdentifier: Int) {
     )
 }
 
+// This is one of my favourite functions, because it has pretty much the same althroughout development in the project :D. What it does is takes a sentence, and splits it up into an array of strings, so if you had a sentence like "Hello, world!" it would split it up into ["hello", ",", "world", "!"]. This allows the encoding function to easily create an embedding for a sentence, or for the model to learn more vocab. This is quite a useful function that makes it easier to talk to the model.
 func tokenize(sentence input: String) -> [String] {
     var word = ""
     var tokens: [String] = []
@@ -124,6 +130,8 @@ func tokenize(sentence input: String) -> [String] {
     return tokens
 }
 
+
+// This function helps apply temperature and makes sure that the probabilities all add up to 1. This relates to argmax, but is more 'creative' and expiriments more with word choice, kind of like what I explained with temperature, but in this case it is on the higher side.
 func sampleFromDistribution(_ probabilities: [Double], temperature: Double = 0.8) -> Int {
 
     var adjustedProbabilities: [Double] = []
@@ -160,6 +168,7 @@ func sampleFromDistribution(_ probabilities: [Double], temperature: Double = 0.8
     return normalizedProbabilities.count - 1
 }
 
+// Argmax is kind of like sample from distribution, but in this case it sticks 'more to the rules' in a sense. It makes sure that tokens with a higher probability get chosen way more often. So in the temperature analogy it would be on the lower end.
 func argmax(_ values: [Double]) -> Int {
     var bestIndex = 0
     var bestValue = values[0]
@@ -176,6 +185,7 @@ func argmax(_ values: [Double]) -> Int {
 
 // MARK: - VOCAB BUILD
 
+// The model needs to learn words, and this is what build vocabulary does. It adds elements to the forward and backward tokens variables, so that the model can increase it's word knowledge and diversity.
 func buildVocabulary(from dataset: [(String, String)]) {
     for (input, output) in dataset {
         let tokens = tokenize(sentence: input + " " + output)
@@ -192,6 +202,7 @@ func buildVocabulary(from dataset: [(String, String)]) {
 
 // MARK: - MATRIX UTIL
 
+// This function gets the embedding for a given id that corresponds to a word. So if hello was an id of 1, and you wanted to pass that id into the embedding vector function, it would return the embedding that hello has.
 func embeddingVector(for id: Int) -> Matrix<Double> {
     var buffer = Array(repeating: 0.0, count: embeddingDimensions)
 
@@ -204,6 +215,7 @@ func embeddingVector(for id: Int) -> Matrix<Double> {
     return Matrix(rows: embeddingDimensions, columns: 1, grid: buffer)
 }
 
+// This creates an array of empty zeros, except at one position where there is a one. This is used to represent words with meaning for the network, instead of just one id. It shows that the word has meaning here, and not releated to others.
 func oneHotVector(for id: Int) -> Matrix<Double> {
     let size = forwardTokens.count
     var vector = Array(repeating: 0.0, count: size)
@@ -215,8 +227,9 @@ func oneHotVector(for id: Int) -> Matrix<Double> {
     return Matrix(rows: size, columns: 1, grid: vector)
 }
 
-// MARK: - TALENT (FIXED CONFORMANCE)
+// MARK: - TALENT
 
+// This is the english talent. This library is supposed to be modular, and this is the talent designed to let the model speak. It has an input and output type of a String, and its quite simple, so it doesn't take up much performance.
 struct EnglishTalent: Talent {
 
     typealias Input = String
@@ -283,6 +296,8 @@ struct EnglishTalent: Talent {
 
 // MARK: - MODEL
 
+
+// This is the model. The heart of the operation, and it is the largest neural network I have written so far.
 struct SimpleModel: Network {
 
     public var talent: any Talent
@@ -607,6 +622,7 @@ struct SimpleModel: Network {
     }
 }
 
+// This function loads a data set I have, called Bubble Data, since this was originally going to be based off of Bubble from the amazing digital circus, I just have some basic data in there for now, not Bubble style yet. At some point it probably will be though.
 func loadDataset(from path: String) -> [(String, String)] {
 
     guard let rawText = try? String(contentsOfFile: path, encoding: .utf8) else {
@@ -639,6 +655,7 @@ func loadDataset(from path: String) -> [(String, String)] {
     return dataset
 }
 
+// This is the function that tests the model, it contains a training loop, gets the data, trains the model and enters you into an interactive test, and it really ties the entire operation together.
 func testModel() {
     
     let path = "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/SwiftNNApp/bubble_data.txt"
