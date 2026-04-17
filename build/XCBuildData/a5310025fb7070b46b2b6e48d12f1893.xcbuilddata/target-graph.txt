@@ -1,0 +1,8 @@
+Target dependency graph (4 targets)
+Target 'SwiftNNTests' in project 'SwiftNN'
+➜ Explicit dependency on target 'SwiftNN' in project 'SwiftNN'
+Target 'SwiftNN' in project 'SwiftNN'
+➜ Explicit dependency on target 'Surge' in project 'Surge'
+Target 'Surge' in project 'Surge'
+➜ Explicit dependency on target 'Surge' in project 'Surge'
+Target 'Surge' in project 'Surge' (no dependencies)

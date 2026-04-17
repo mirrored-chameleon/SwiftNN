@@ -72,6 +72,9 @@
 		};
 		8BD136082F71288B00384D66 /* SwiftNNApp */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			explicitFileTypes = {
+				main.swift = sourcecode.swift;
+			};
 			path = SwiftNNApp;
 			sourceTree = "<group>";
 		};

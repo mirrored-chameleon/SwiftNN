@@ -1,0 +1,19 @@
+{
+  "" : {
+    "diagnostics" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests-primary.dia",
+    "emit-module-dependencies" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests-primary-emit-module.dia",
+    "pch" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests-primary.swiftdeps"
+  },
+  "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/SwiftNNTests/SwiftNNTests.swift" : {
+    "const-values" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests.swiftconstvalues",
+    "dependencies" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests.d",
+    "diagnostics" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests.dia",
+    "index-unit-output-path" : "/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests.o",
+    "llvm-bc" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests.bc",
+    "object" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests.o",
+    "swift-dependencies" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests.swiftdeps",
+    "swiftmodule" : "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/build/SwiftNN.build/Debug/SwiftNNTests.build/Objects-normal/arm64/SwiftNNTests~partial.swiftmodule"
+  }
+}
