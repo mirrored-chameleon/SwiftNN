@@ -305,14 +305,35 @@ struct SimpleModel: Network {
     public var bias: [Matrix<Double>]
 
     var layerOutputs: [[Double]] = []
-    var learningRate: Double = 0.01
+    var learningRate: Double = 0.02
 
-    var hiddenSize: Int = 128
+    var hiddenSize: Int = 32
     var inputWeights: Matrix<Double>
     var hiddenWeights: Matrix<Double>
 
     var outputWeights: [[Double]]
     var outputBias: [Double]
+
+    func outputProbabilities(for hiddenState: Matrix<Double>) -> [Double] {
+
+        let hiddenValues = flattenMatrix(hiddenState)
+        let vocabularySize = outputBias.count
+
+        var logits = Array(repeating: 0.0, count: vocabularySize)
+
+        for vocabularyIndex in 0..<vocabularySize {
+
+            var sum = outputBias[vocabularyIndex]
+
+            for hiddenIndex in 0..<hiddenSize {
+                sum += hiddenValues[hiddenIndex] * outputWeights[vocabularyIndex][hiddenIndex]
+            }
+
+            logits[vocabularyIndex] = sum
+        }
+
+        return softmax(logits)
+    }
 
     // MARK: - Required by protocol
 
@@ -489,13 +510,14 @@ struct SimpleModel: Network {
         previousHidden: Matrix<Double>,
         currentHidden: Matrix<Double>,
         inputVector: Matrix<Double>,
+        inputTokenID: Int,   // 🔥 NEW
         targetIndex: Int
     ) {
 
         let hiddenFlat = flattenMatrix(currentHidden)
         let vocabSize = outputBias.count
 
-        // --- Forward (output layer)
+        // --- Forward
         var logits = Array(repeating: 0.0, count: vocabSize)
 
         for i in 0..<vocabSize {
@@ -514,7 +536,7 @@ struct SimpleModel: Network {
             outputErrors[i] = probs[i] - (i == targetIndex ? 1.0 : 0.0)
         }
 
-        // --- Gradient wrt hidden
+        // --- Hidden gradient
         var hiddenGradient = Array(repeating: 0.0, count: hiddenSize)
 
         for h in 0..<hiddenSize {
@@ -523,11 +545,13 @@ struct SimpleModel: Network {
                 sum += outputWeights[i][h] * outputErrors[i]
             }
 
-            // tanh derivative
-            hiddenGradient[h] = sum
+            let hVal = hiddenFlat[h]
+            let tanhDeriv = 1.0 - (hVal * hVal)
+
+            hiddenGradient[h] = sum * tanhDeriv
         }
 
-        // --- Update output layer (same as before)
+        // --- Update output layer
         for i in 0..<vocabSize {
 
             let error = outputErrors[i]
@@ -537,6 +561,22 @@ struct SimpleModel: Network {
             }
 
             outputBias[i] -= learningRate * error
+        }
+
+        // --- Backprop to input (THIS is the key part)
+        var inputGradient = Array(repeating: 0.0, count: embeddingDimensions)
+
+        for i in 0..<embeddingDimensions {
+            var sum = 0.0
+            for h in 0..<hiddenSize {
+                sum += inputWeights[h, i] * hiddenGradient[h]
+            }
+            inputGradient[i] = sum
+        }
+
+        // --- 🔥 UPDATE EMBEDDING
+        for i in 0..<embeddingDimensions {
+            embeddings[inputTokenID, i] -= learningRate * inputGradient[i]
         }
 
         // --- Update inputWeights
@@ -655,6 +695,27 @@ func loadDataset(from path: String) -> [(String, String)] {
     return dataset
 }
 
+func fallbackResponse(for input: String, from dataset: [(String, String)]) -> String {
+
+    let inputTokens = Set(tokenize(sentence: input))
+
+    var bestScore = 0
+    var bestResponse = "i am not sure how to answer that yet"
+
+    for (question, answer) in dataset {
+
+        let questionTokens = Set(tokenize(sentence: question))
+        let overlapCount = inputTokens.intersection(questionTokens).count
+
+        if overlapCount > bestScore {
+            bestScore = overlapCount
+            bestResponse = answer
+        }
+    }
+
+    return bestResponse
+}
+
 // This is the function that tests the model, it contains a training loop, gets the data, trains the model and enters you into an interactive test, and it really ties the entire operation together.
 func testModel() {
     
@@ -673,18 +734,18 @@ func testModel() {
     print("📖 Vocabulary size: \(forwardTokens.count)")
     
     var model = SimpleModel(
-        layers: [128, 64, 64, forwardTokens.count],
+        layers: [32, 32, 32, forwardTokens.count],
         talent: EnglishTalent()
     )
     
-    let epochs = 30
+    let epochs = 100
     
     for epoch in 0..<epochs {
 
         var totalLoss: Double = 0.0
         var steps: Double = 0.0
         
-        let shuffled = dataset.shuffled()
+        let shuffled = Array(dataset.shuffled())
 
         for (input, output) in shuffled {
 
@@ -737,20 +798,7 @@ func testModel() {
                 )
 
                 // 🔥 FORWARD (single correct output path)
-                let hiddenFlat = flattenMatrix(hiddenState)
-                let vocabSize = model.outputBias.count
-
-                var logits = Array(repeating: 0.0, count: vocabSize)
-
-                for i in 0..<vocabSize {
-                    var sum = model.outputBias[i]
-                    for h in 0..<model.hiddenSize {
-                        sum += hiddenFlat[h] * model.outputWeights[i][h]
-                    }
-                    logits[i] = sum
-                }
-
-                let probs = softmax(logits)
+                let probs = model.outputProbabilities(for: hiddenState)
 
                 // --- Loss
                 let loss = -log(max(probs[targetID], 1e-12))
@@ -761,7 +809,7 @@ func testModel() {
                 model.trainStep(
                     previousHidden: previousHidden,
                     currentHidden: hiddenState,
-                    inputVector: inputVector,
+                    inputVector: inputVector, inputTokenID: currentID,
                     targetIndex: targetID
                 )
             }
@@ -776,7 +824,12 @@ func testModel() {
     while true {
 
         print("You: ", terminator: "")
-        guard let inputText = readLine(), !inputText.isEmpty else {
+
+        guard let inputText = readLine() else {
+            break
+        }
+
+        if inputText.isEmpty {
             continue
         }
 
@@ -809,7 +862,7 @@ func testModel() {
         var currentID = tokenID("<START>")
         var outputWords: [String] = []
 
-        for _ in 0..<100 {
+        for _ in 0..<30 {
 
             let inputVector = embeddingVector(for: currentID)
 
@@ -821,10 +874,9 @@ func testModel() {
             )
 
             // Forward pass
-            let outputMatrix = model.predict(input: hiddenState)
-            var probabilities = flattenMatrix(outputMatrix)
+            var probabilities = model.outputProbabilities(for: hiddenState)
 
-            let repetitionPenalty: Double = 1.2
+            let repetitionPenalty: Double = 1.5
 
             for generatedWord in outputWords {
 
@@ -841,7 +893,7 @@ func testModel() {
                 }
             }
 
-            let nextID = sampleFromDistribution(probabilities, temperature: 0.8)
+            let nextID = sampleFromDistribution(probabilities, temperature: 0.55)
 
             // ✅ STOP CONDITIONS
             if nextID == tokenID("<END>") { break }
@@ -853,7 +905,12 @@ func testModel() {
             currentID = nextID
         }
 
-        print("Model: \(outputWords.joined(separator: " "))\n")
+        if outputWords.count < 1 {
+            let fallback = fallbackResponse(for: inputText, from: dataset)
+            print("Model: \(fallback)\n")
+        } else {
+            print("Model: \(outputWords.joined(separator: " "))\n")
+        }
     }
 }
 
