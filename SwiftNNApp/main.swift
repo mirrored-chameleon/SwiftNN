@@ -36,7 +36,7 @@ var backwardTokens: [Int: String] = [
 ]
 
 // How many dimensions the embedding has. Each embedding corresponds to a word. The more dimensions they have, the more meaning a word has to the model. At the moment (as of writing) the embedding dimensions is equal to 32, so the model can train quicker, as the more dimensions an embedding has, the longer it takes training. The closer embeddings are to eachother. So for example, hello and hi will have very simmilar embeddings, since  they are synonyms.
-let embeddingDimensions = 32
+let embeddingDimensions = 98
 
 
 // The Matrix that stores all of the embeddings. The model expects up to 1000 words in it's vocabulary, as of writing, there are 706.
@@ -46,7 +46,42 @@ var embeddings = Matrix(
     grid: (0..<1000 * embeddingDimensions).map { _ in Double.random(in: -1.0...1.0) }
 )
 
+var personalityEmbeddings: [String: [Double]] = [
+    "neutral": Array(repeating: 0.0, count: embeddingDimensions),
+    "excited": (0..<embeddingDimensions).map { _ in Double.random(in: -0.1...0.1) },
+    "calm": (0..<embeddingDimensions).map { _ in Double.random(in: -0.1...0.1) },
+    "anxious": (0..<embeddingDimensions).map { _ in Double.random(in: -0.1...0.1) },
+    "helpful": (0..<embeddingDimensions).map { _ in Double.random(in: -0.1...0.1) },
+    "positive": (0..<embeddingDimensions).map { _ in Double.random(in: -0.1...0.1) },
+    "friendly": (0..<embeddingDimensions).map { _ in Double.random(in: -0.1...0.1) },
+        "philosophical": (0..<embeddingDimensions).map { _ in Double.random(in: -0.1...0.1) }
+]
+
+
 // MARK: - HELPERS
+
+let personalityVector = Matrix<Double>(
+    rows: embeddingDimensions,
+    columns: 1,
+    grid: Array(repeating: 0.0, count: embeddingDimensions)
+)
+
+
+func personalityVector(for tag: String?) -> Matrix<Double> {
+    let key = tag ?? "neutral"
+    let vec = personalityEmbeddings[key] ?? personalityEmbeddings["neutral"]!
+
+    return Matrix(rows: embeddingDimensions, columns: 1, grid: vec)
+}
+
+func extractPersonality(_ input: String) -> String? {
+    if input.contains("<PERSONALITY:") {
+        let start = input.range(of: "<PERSONALITY:")!
+        let end = input.range(of: ">")!
+        return String(input[start.upperBound..<end.lowerBound])
+    }
+    return nil
+}
 
 // Flattens Matrixes back into 2D arrays to use, so looping through Matrixes becomes a more streamline process.
 @inline(__always)
@@ -238,6 +273,8 @@ struct EnglishTalent: Talent {
     var tokens: [Output] = []
 
     func encode(_ input: String) -> Matrix<Double> {
+        
+        var personality = extractPersonality(input)
 
         let tokenList = tokenize(sentence: input)
 
@@ -305,9 +342,9 @@ struct SimpleModel: Network {
     public var bias: [Matrix<Double>]
 
     var layerOutputs: [[Double]] = []
-    var learningRate: Double = 0.02
+    var learningRate: Double = 0.1
 
-    var hiddenSize: Int = 32
+    var hiddenSize: Int = 98
     var inputWeights: Matrix<Double>
     var hiddenWeights: Matrix<Double>
 
@@ -510,8 +547,9 @@ struct SimpleModel: Network {
         previousHidden: Matrix<Double>,
         currentHidden: Matrix<Double>,
         inputVector: Matrix<Double>,
-        inputTokenID: Int,   // 🔥 NEW
-        targetIndex: Int
+        inputTokenID: Int,
+        targetIndex: Int,
+        personalityTag: String?
     ) {
 
         let hiddenFlat = flattenMatrix(currentHidden)
@@ -576,7 +614,8 @@ struct SimpleModel: Network {
 
         // --- 🔥 UPDATE EMBEDDING
         for i in 0..<embeddingDimensions {
-            embeddings[inputTokenID, i] -= learningRate * inputGradient[i]
+            let embeddingLR = learningRate * 0.3
+            embeddings[inputTokenID, i] -= embeddingLR * inputGradient[i]
         }
 
         // --- Update inputWeights
@@ -591,6 +630,24 @@ struct SimpleModel: Network {
             for j in 0..<previousHidden.rows {
                 hiddenWeights[h, j] -= learningRate * hiddenGradient[h] * previousHidden[j, 0]
             }
+        }
+        
+        // --- gradient clipping (simple stability fix)
+        let clipValue = 5.0
+        for i in 0..<hiddenGradient.count {
+            hiddenGradient[i] = max(-clipValue, min(clipValue, hiddenGradient[i]))
+        }
+        
+        // --- 🔥 UPDATE PERSONALITY VECTOR
+        if let tag = personalityTag,
+           var pVec = personalityEmbeddings[tag] {
+
+            for i in 0..<embeddingDimensions {
+                let pLR = learningRate * 0.2
+                pVec[i] -= pLR * inputGradient[i]
+            }
+
+            personalityEmbeddings[tag] = pVec
         }
     }
 
@@ -719,7 +776,7 @@ func fallbackResponse(for input: String, from dataset: [(String, String)]) -> St
 // This is the function that tests the model, it contains a training loop, gets the data, trains the model and enters you into an interactive test, and it really ties the entire operation together.
 func testModel() {
     
-    let path = "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/SwiftNNApp/bubble_data.txt"
+    let path = "/Users/davyn/Library/Mobile Documents/com~apple~CloudDocs/Development/SwiftNN/SwiftNNApp/ORBI training data.txt"
     let dataset = loadDataset(from: path)
     
     guard !dataset.isEmpty else {
@@ -750,6 +807,8 @@ func testModel() {
         for (input, output) in shuffled {
 
             let inputIDs = tokenize(sentence: input).map(tokenID)
+            
+            
 
             var outputTokens = tokenize(sentence: output)
             outputTokens.insert("<START>", at: 0)
@@ -770,7 +829,9 @@ func testModel() {
 
             // --- Encode input (context)
             for id in inputIDs {
-                let inputVector = embeddingVector(for: id)
+                let personality = extractPersonality(input)
+                let pVec = personalityVector(for: personality)
+                let inputVector = embeddingVector(for: id) + pVec
 
                 hiddenState = model.updateHidden(
                     previous: hiddenState,
@@ -785,8 +846,11 @@ func testModel() {
 
                 let currentID = outputIDs[t]
                 let targetID = outputIDs[t + 1]
+                
+                let personality = extractPersonality(output)
 
-                let inputVector = embeddingVector(for: currentID)
+                let pVec = personalityVector(for: personality)
+                let inputVector = embeddingVector(for: currentID) + pVec
 
                 previousHidden = hiddenState
 
@@ -809,8 +873,10 @@ func testModel() {
                 model.trainStep(
                     previousHidden: previousHidden,
                     currentHidden: hiddenState,
-                    inputVector: inputVector, inputTokenID: currentID,
-                    targetIndex: targetID
+                    inputVector: inputVector,
+                    inputTokenID: currentID,
+                    targetIndex: targetID,
+                    personalityTag: personality
                 )
             }
         }
@@ -849,7 +915,9 @@ func testModel() {
 
         // 🔥 ENCODE USER INPUT INTO CONTEXT
         for id in inputIDs {
-            let inputVector = embeddingVector(for: id)
+            let personality = extractPersonality(inputText)
+            let pVec = personalityVector(for: personality)
+            let inputVector = embeddingVector(for: id) + pVec
 
             hiddenState = model.updateHidden(
                 previous: hiddenState,
@@ -892,12 +960,27 @@ func testModel() {
                     probabilities[index] = probabilities[index] / total
                 }
             }
+            
+            // reduce punctuation probability BEFORE sampling
+            if let exIndex = forwardTokens["!"] {
+                probabilities[exIndex] *= 0.7
+            }
+            if let dotIndex = forwardTokens["."] {
+                probabilities[dotIndex] *= 0.7
+            }
 
+            // renormalize (important)
+            if total > 0 {
+                for i in 0..<probabilities.count {
+                    probabilities[i] /= total
+                }
+            }
+
+            // NOW sample
             let nextID = sampleFromDistribution(probabilities, temperature: 0.55)
 
             // ✅ STOP CONDITIONS
             if nextID == tokenID("<END>") { break }
-            if nextID == tokenID("<UNK>") { break }
 
             let word = backwardTokens[nextID] ?? "<UNK>"
             outputWords.append(word)
