@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftNN}/SwiftNN",
+            "name": "Debug SwiftNN (SwiftNN)",
+            "target": "SwiftNN",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug SwiftNN (SwiftNN)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftNN}/SwiftNN",
+            "name": "Release SwiftNN (SwiftNN)",
+            "target": "SwiftNN",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release SwiftNN (SwiftNN)"
+        }
+    ]
+}
