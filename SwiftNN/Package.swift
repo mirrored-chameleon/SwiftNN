@@ -9,11 +9,19 @@ let package = Package(
         .library(
             name: "SwiftNN",
             targets: ["SwiftNN"]
+        ),
+        .executable(
+            name: "SwiftNNXORDemo",
+            targets: ["SwiftNNXORDemo"]
         )
     ],
     targets: [
         .target(
             name: "SwiftNN"
+        ),
+        .executableTarget(
+            name: "SwiftNNXORDemo",
+            dependencies: ["SwiftNN"]
         )
     ]
 )

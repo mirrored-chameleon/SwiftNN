@@ -4,21 +4,41 @@
             "type": "swift",
             "request": "launch",
             "args": [],
-            "cwd": "${workspaceFolder:SwiftNN}/SwiftNN",
-            "name": "Debug SwiftNN (SwiftNN)",
-            "target": "SwiftNN",
+            "cwd": "${workspaceFolder:SwiftNN}/SwiftNNTest",
+            "name": "Debug SwiftNNTest (SwiftNNTest)",
+            "target": "SwiftNNTest",
             "configuration": "debug",
-            "preLaunchTask": "swift: Build Debug SwiftNN (SwiftNN)"
+            "preLaunchTask": "swift: Build Debug SwiftNNTest (SwiftNNTest)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftNN}/SwiftNNTest",
+            "name": "Release SwiftNNTest (SwiftNNTest)",
+            "target": "SwiftNNTest",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release SwiftNNTest (SwiftNNTest)"
         },
         {
             "type": "swift",
             "request": "launch",
             "args": [],
             "cwd": "${workspaceFolder:SwiftNN}/SwiftNN",
-            "name": "Release SwiftNN (SwiftNN)",
-            "target": "SwiftNN",
+            "name": "Debug SwiftNNXORDemo (SwiftNN)",
+            "target": "SwiftNNXORDemo",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug SwiftNNXORDemo (SwiftNN)"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftNN}/SwiftNN",
+            "name": "Release SwiftNNXORDemo (SwiftNN)",
+            "target": "SwiftNNXORDemo",
             "configuration": "release",
-            "preLaunchTask": "swift: Build Release SwiftNN (SwiftNN)"
+            "preLaunchTask": "swift: Build Release SwiftNNXORDemo (SwiftNN)"
         }
     ]
 }

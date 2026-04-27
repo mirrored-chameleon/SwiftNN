@@ -1,30 +1,29 @@
-// The Swift Programming Language
-// https://docs.swift.org/swift-book
-
 import Foundation
 
-struct XORTalent: Talent {
+public struct XORTalent: Talent {
 
-    typealias Input = [Double]
-    typealias Output = Int
+    public typealias Input = [Double]
+    public typealias Output = Int
 
-    var tokens: [Int] = [0, 1]
+    public var tokens: [Int] = [0, 1]
 
-    func encode(_ input: [Double]) -> Matrix<Double> {
-        return Matrix(rows: input.count, columns: 1, grid: input)
+    public init() {}
+
+    public func encode(_ input: [Double]) -> Matrix<Double> {
+        Matrix(rows: input.count, columns: 1, grid: input)
     }
 
-    func decode(_ output: Matrix<Double>) -> Int {
-        return argmax(flatten(output))
+    public func decode(_ output: Matrix<Double>) -> Int {
+        argmax(flatten(output))
     }
 }
 
-func runXORTest() {
+public func runXORTest() {
 
-    print("🧠 Starting XOR test...")
+    print("Starting XOR test...")
 
     var model = BasicModel(
-        layers: [2, 4, 2], // slightly bigger hidden layer helps
+        layers: [2, 4, 2],
         talent: XORTalent()
     )
 
@@ -35,10 +34,8 @@ func runXORTest() {
         ([1, 1], [1, 0])
     ]
 
-    // Train
     for _ in 0..<5000 {
         for sample in trainingData {
-
             let input = Matrix<Double>(
                 rows: 2,
                 columns: 1,
@@ -55,9 +52,7 @@ func runXORTest() {
         }
     }
 
-    // Test
     for sample in trainingData {
-
         let input = Matrix<Double>(
             rows: 2,
             columns: 1,
@@ -67,16 +62,8 @@ func runXORTest() {
         let output = model.predict(input: input)
         let prediction = model.predictAction(input: input)
 
-        print("Input: \(sample.0) → Output: \(flatten(output)) → Class: \(prediction)")
+        print("Input: \(sample.0) -> Output: \(flatten(output)) -> Class: \(prediction)")
     }
 
-    print("✅ XOR test finished")
-}
-
-
-@main
-struct SwiftNN {
-    static func main() {
-        runXORTest()
-    }
+    print("XOR test finished")
 }
