@@ -6,20 +6,20 @@ import SwiftNN
 
 final class TokenStore {
     
-    private var forwardTokens: [Int: String] = [
+    var forwardTokens: [Int: String] = [
         0: "<UNK>",
         1: "<END>",
         2: "<START>"
     ]
     
-    private var backwardTokens: [String: Int] = [
+    var backwardTokens: [String: Int] = [
         "<UNK>": 0,
         "<END>": 1,
         "<START>": 2
     ]
     
-    private var embeddings: [Int: Matrix<Double>] = [:]
-    private let embeddingWidth = 50
+    var embeddings: [Int: Matrix<Double>] = [:]
+    let embeddingWidth = 50
     
     var allTokens: [String] {
         forwardTokens
@@ -65,7 +65,9 @@ final class TokenStore {
         let newEmbedding = Matrix(
             rows: 1,
             columns: embeddingWidth,
-            grid: Array(repeating: 0.0, count: embeddingWidth)
+            grid: (0..<embeddingWidth).map { _ in
+                Double.random(in: -0.1...0.1)
+            }
         )
         
         embeddings[tokenIdentifier] = newEmbedding
@@ -123,7 +125,78 @@ final class EnglishTalent: Talent {
     }
 }
 
+struct SimpleNetwork: Network {
+    var talent: any Talent
 
+    var weights: [[Matrix<Double>]]
+    var bias: [Matrix<Double>]
+
+    var learningRate: Double = 0.01
+
+    var tokensStore: TokenStore
+
+
+    mutating func predict(input: Matrix<Double>) -> Matrix<Double> {
+        var currentOutput = input
+
+        for layerIndex in 0..<weights.count {
+            for weightMatrix in weights[layerIndex] {
+                currentOutput = currentOutput * weightMatrix + bias[layerIndex]
+                
+                if layerIndex < weights.count - 1 {
+                    currentOutput = reluMatrix(currentOutput)
+                }
+            }
+        }
+        
+        return Matrix<Double>(rows: currentOutput.rows, columns: currentOutput.columns, grid: softmax(currentOutput.grid))
+    }
+
+    mutating func train(input: Matrix<Double>, target: Matrix<Double>) {
+        let prediction  = predict(input: input)
+        let error = prediction - target
+
+        for layer in 0..<weights.count {
+            for weight in 0..<weights[layer].count {
+                let gradientScale = learningRate * error[0, weight]
+                let expandedInput = Matrix<Double>(
+                    rows: weights[layer][weight].rows,
+                    columns: weights[layer][weight].columns,
+                    grid: Array(repeating: input.grid, count: weights[layer][weight].rows)
+                        .flatMap { row in row }
+                )
+                weights[layer][weight] = weights[layer][weight] - gradientScale * expandedInput
+            }
+        }
+
+        for biasIndex in 0..<bias.count {
+            bias[biasIndex] = bias[biasIndex] - learningRate * error
+        }
+    }
+
+    init(_ layers: [Int], talent: Talent, tokensStore: TokenStore) {
+        self.weights = []
+        self.bias = []
+
+        var previousSize = 50
+        for layer in layers {
+            weights.append([Matrix<Double>(
+                rows: previousSize,
+                columns: layer,
+                grid: Array(repeating: Double.random(in: -1...1), count: previousSize * layer)
+            )])
+            bias.append(Matrix<Double>(
+                rows: 1,
+                columns: layer,
+                grid: Array(repeating: 0.0, count: layer)
+            ))
+            previousSize = layer
+        }
+
+        self.tokensStore = tokensStore
+        self.talent = talent
+    }
+}
 
 @main
 struct SwiftNNTest {

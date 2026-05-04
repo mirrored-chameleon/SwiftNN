@@ -6,112 +6,113 @@ import Foundation
 public func relu(_ inputValue: Double) -> Double {
     return max(0.0, inputValue)
 }
+public func reluMatrix(_ inputMatrix: Matrix<Double>) -> Matrix<Double> {
 
+    Matrix(
+        rows: inputMatrix.rows,
+        columns: inputMatrix.columns,
+        grid: inputMatrix.grid.map { value in
+            relu(value)
+        }
+    )
+}
 public func reluDerivative(_ inputValue: Double) -> Double {
     return inputValue > 0.0 ? 1.0 : 0.0
 }
-
 public func sigmoid(_ inputValue: Double) -> Double {
     return 1.0 / (1.0 + exp(-inputValue))
 }
-
 public func tanhDerivative(fromOutput outputValue: Double) -> Double {
     return 1.0 - (outputValue * outputValue)
 }
-
 public func softmax(_ inputValues: [Double]) -> [Double] {
-    
+
     let largestValue = inputValues.max() ?? 0.0
-    
+
     let exponentValues = inputValues.map { value in
         exp(value - largestValue)
     }
-    
+
     let exponentSum = exponentValues.reduce(0.0, +)
-    
+
     return exponentValues.map { exponentValue in
         exponentValue / exponentSum
     }
 }
-
 public func argmax(_ values: [Double]) -> Int {
-    
+
     var bestIndex = 0
     var bestValue = values[0]
-    
+
     for index in 1..<values.count {
-        
+
         let currentValue = values[index]
-        
+
         if currentValue > bestValue {
             bestValue = currentValue
             bestIndex = index
         }
     }
-    
+
     return bestIndex
 }
-
 public func sampleIndex(
     from probabilities: [Double],
     temperature: Double = 1.0
 ) -> Int {
-    
+
     precondition(!probabilities.isEmpty, "Cannot sample from an empty array.")
-    
+
     let safeTemperature = max(temperature, 0.0001)
-    
+
     let adjustedValues = probabilities.map { probability in
         pow(max(probability, 0.0), 1.0 / safeTemperature)
     }
-    
+
     let totalValue = adjustedValues.reduce(0.0, +)
-    
+
     if totalValue == 0.0 {
         return Int.random(in: 0..<probabilities.count)
     }
-    
+
     let normalizedValues = adjustedValues.map { value in
         value / totalValue
     }
-    
+
     let randomValue = Double.random(in: 0.0..<1.0)
-    
+
     var cumulativeValue = 0.0
-    
+
     for index in 0..<normalizedValues.count {
         cumulativeValue += normalizedValues[index]
-        
+
         if randomValue < cumulativeValue {
             return index
         }
     }
-    
+
     return normalizedValues.count - 1
 }
-
 public func clipped(_ value: Double, limit: Double) -> Double {
     return max(-limit, min(limit, value))
 }
-
 public func flatten(_ matrix: Matrix<Double>) -> [Double] {
-    
+
     var flattenedValues: [Double] = []
-    
+
     flattenedValues.reserveCapacity(matrix.rows * matrix.columns)
-    
+
     for rowIndex in 0..<matrix.rows {
-        
+
         for columnIndex in 0..<matrix.columns {
-            
+
             flattenedValues.append(matrix[rowIndex, columnIndex])
-            
+
         }
     }
-    
+
     return flattenedValues
 }
-
 public struct Matrix<T: FloatingPoint> {
     public var rows: Int
     public var columns: Int
@@ -192,24 +193,33 @@ public struct Matrix<T: FloatingPoint> {
     }
 
 }
-
-
 extension Matrix where T == Double {
-    
-    static func random(
-        rows: Int,
-        columns: Int,
-        in range: ClosedRange<Double> = -1.0...1.0
-    ) -> Matrix<Double> {
-        
+
+    static func random(rows: Int, columns: Int, in range: ClosedRange<Double> = -1.0...1.0)
+        -> Matrix<Double>
+    {
+
         let values = (0..<(rows * columns)).map { _ in
             Double.random(in: range)
         }
-        
+
         return Matrix<Double>(
             rows: rows,
             columns: columns,
             grid: values
+        )
+    }
+
+    static func log(_ x: Matrix<Double>) -> Matrix<Double> {
+
+        let newGrid = x.grid.map { value in
+            Foundation.log(max(value, 1e-8)) 
+        }
+
+        return Matrix<Double>(
+            rows: x.rows,
+            columns: x.columns,
+            grid: newGrid
         )
     }
 }

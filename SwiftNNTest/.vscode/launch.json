@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftNNTest}",
+            "name": "Debug SwiftNNTest",
+            "target": "SwiftNNTest",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug SwiftNNTest"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftNNTest}",
+            "name": "Release SwiftNNTest",
+            "target": "SwiftNNTest",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release SwiftNNTest"
+        }
+    ]
+}
