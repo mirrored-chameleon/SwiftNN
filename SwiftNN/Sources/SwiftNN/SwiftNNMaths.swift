@@ -193,9 +193,9 @@ public struct Matrix<T: FloatingPoint> {
     }
 
 }
-extension Matrix where T == Double {
+extension Matrix {
 
-    static func random(rows: Int, columns: Int, in range: ClosedRange<Double> = -1.0...1.0)
+    public static func random(rows: Int, columns: Int, in range: ClosedRange<Double> = -1.0...1.0)
         -> Matrix<Double>
     {
 
@@ -210,13 +210,19 @@ extension Matrix where T == Double {
         )
     }
 
-    static func log(_ x: Matrix<Double>) -> Matrix<Double> {
+    public static func matrixLog(_ val: Matrix<T>) -> Matrix<T> {
 
-        let newGrid = x.grid.map { value in
-            Foundation.log(max(value, 1e-8)) 
+        guard let x = val as? Matrix<Double> else {
+            return Matrix<T>(rows: 1, columns: 1, grid: [404])
         }
 
-        return Matrix<Double>(
+        let testGrid = x.grid.map {
+            Foundation.log(max($0, 1e-8))
+        }
+
+        guard let newGrid = testGrid as? [T] else { return Matrix<T>(rows: 1, columns: 1, grid: [404]) }
+
+        return Matrix<T>(
             rows: x.rows,
             columns: x.columns,
             grid: newGrid
