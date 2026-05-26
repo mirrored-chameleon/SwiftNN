@@ -1,0 +1,9 @@
+# Tell 
+GitHub
+ to stop scanning hidden IDE settings for language stats
+*.xcodeproj/** linguist-vendored
+*.xcworkspace/** linguist-vendored
+.swiftpm/** linguist-vendored
+
+# If you have any sample data files or headers confusing the system:
+*.h linguist-language=Swift
