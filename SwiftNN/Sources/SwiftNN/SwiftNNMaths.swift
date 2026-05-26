@@ -56,10 +56,7 @@ public func argmax(_ values: [Double]) -> Int {
 
     return bestIndex
 }
-public func sampleIndex(
-    from probabilities: [Double],
-    temperature: Double = 1.0
-) -> Int {
+public func sampleIndex(from probabilities: [Double], temperature: Double = 1.0) -> Int {
 
     precondition(!probabilities.isEmpty, "Cannot sample from an empty array.")
 
