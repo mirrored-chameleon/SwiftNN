@@ -7,3 +7,5 @@ GitHub
 
 # If you have any sample data files or headers confusing the system:
 *.h linguist-language=Swift
+
+*vers.c linguist-vendored
