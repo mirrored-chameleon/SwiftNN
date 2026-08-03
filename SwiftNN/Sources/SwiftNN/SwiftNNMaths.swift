@@ -115,18 +115,51 @@ public struct Matrix<T: FloatingPoint> {
     public var columns: Int
     public var grid: [T]
 
+    public var transposed: Matrix<T> {
+
+        transpose()
+
+    }
+
     public init(rows: Int, columns: Int, grid: [T]) {
         self.rows = rows
         self.columns = columns
         self.grid = grid
     }
 
+    private func index(row: Int, column: Int) -> Int {
+
+        return row * columns + column
+
+    }
+
     public subscript(row: Int, col: Int) -> T {
         get {
-            return grid[row * columns + col]
+            return grid[index(row: row, column: col)]
         }
         set {
-            grid[row * columns + col] = newValue
+            grid[index(row: row, column: col)] = newValue
+        }
+    }
+
+    public subscript(row: Int) -> [T] {
+        get {
+            precondition(row >= 0 && row < rows)
+
+            let start = row * columns
+            let end = start + columns
+
+            return Array(grid[start..<end])
+        }
+        set {
+            precondition(row >= 0 && row < rows)
+            precondition(newValue.count == columns)
+
+            let start = row * columns
+
+            for i in 0..<columns {
+                grid[start + i] = newValue[i]
+            }
         }
     }
 
@@ -166,8 +199,46 @@ public struct Matrix<T: FloatingPoint> {
         return result
     }
 
+    public func transpose() -> Matrix<T> {
+
+        var newGrid = Array(
+            repeating: T.zero,
+            count: rows * columns
+        )
+
+        for row in 0..<rows {
+
+            for column in 0..<columns {
+
+                newGrid[column * rows + row] =
+                    self[row, column]
+
+            }
+
+        }
+
+        return Matrix(
+            rows: columns,
+            columns: rows,
+            grid: newGrid
+        )
+
+    }
+
     static public func * (lhs: Matrix<T>, rhs: Matrix<T>) -> Matrix<T> {
         return dot(lhs, rhs)
+    }
+
+    public func map(
+        _ transform: (T) -> T
+    ) -> Matrix<T> {
+
+        Matrix(
+            rows: rows,
+            columns: columns,
+            grid: grid.map(transform)
+        )
+
     }
 
     static public func dot(_ a: Matrix<T>, _ b: Matrix<T>) -> Matrix<T> {
@@ -180,9 +251,9 @@ public struct Matrix<T: FloatingPoint> {
             for j in 0..<b.columns {
                 var sum: T = 0
                 for k in 0..<a.columns {
-                    sum = sum + a.grid[i * a.columns + k] * b.grid[k * b.columns + j]
+                    sum = sum + a[i, k] * b[k, j]
                 }
-                result.grid[i * b.columns + j] = sum
+                result[i, j] = sum
             }
         }
 
@@ -217,7 +288,9 @@ extension Matrix {
             Foundation.log(max($0, 1e-8))
         }
 
-        guard let newGrid = testGrid as? [T] else { return Matrix<T>(rows: 1, columns: 1, grid: [404]) }
+        guard let newGrid = testGrid as? [T] else {
+            return Matrix<T>(rows: 1, columns: 1, grid: [404])
+        }
 
         return Matrix<T>(
             rows: x.rows,

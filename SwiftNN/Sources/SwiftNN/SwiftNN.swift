@@ -299,3 +299,155 @@ public struct BasicModel: Network {
         }
     }
 }
+
+public struct SimpleNetwork: Network {
+
+    public var talent: any Talent
+    public var weights: [[Matrix<Double>]]
+    public var bias: [Matrix<Double>]
+
+    var layerOutputs: [[Double]] = []
+    var learningRate: Double = 0.001
+
+    // MARK: - INIT
+
+    public init(layers: [Int], talent: any Talent) {
+
+        self.talent = talent
+        self.weights = []
+        self.bias = []
+
+        for layerIndex in 0..<(layers.count - 1) {
+
+            let inputSize = layers[layerIndex]
+            let outputSize = layers[layerIndex + 1]
+
+            let scale = sqrt(2.0 / Double(inputSize))
+
+            var layerWeights: [Matrix<Double>] = []
+
+            for _ in 0..<outputSize {
+
+                let w = Matrix(
+                    rows: 1,
+                    columns: inputSize,
+                    grid: (0..<inputSize).map { _ in
+                        Double.random(in: -1...1) * scale
+                    }
+                )
+
+                layerWeights.append(w)
+            }
+
+            weights.append(layerWeights)
+
+            bias.append(
+                Matrix(
+                    rows: outputSize,
+                    columns: 1,
+                    grid: Array(repeating: 0.0, count: outputSize)
+                )
+            )
+        }
+    }
+
+    // MARK: - PREDICT
+
+    public mutating func predict(input inputMatrix: Matrix<Double>) -> Matrix<Double> {
+
+        var current = flatten(inputMatrix)
+        layerOutputs.removeAll()
+
+        for layerIndex in 0..<weights.count {
+
+            var outputs: [Double] = []
+            let isFinal = layerIndex == weights.count - 1
+
+            for neuronIndex in 0..<weights[layerIndex].count {
+
+                var sum = 0.0
+
+                for i in 0..<current.count {
+                    sum += weights[layerIndex][neuronIndex][0, i] * current[i]
+                }
+
+                sum += bias[layerIndex][neuronIndex, 0]
+
+                // IMPORTANT: no softmax EVER in SimpleNetwork
+                if isFinal {
+                    sum = sigmoid(sum)   // bounded output for images
+                } else {
+                    sum = relu(sum)
+                }
+
+                outputs.append(sum)
+            }
+
+            layerOutputs.append(outputs)
+            current = outputs
+        }
+
+        return Matrix(rows: current.count, columns: 1, grid: current)
+    }
+
+    // MARK: - TRAIN
+
+    public mutating func train(input inputMatrix: Matrix<Double>, target targetMatrix: Matrix<Double>) {
+
+        let predicted = flatten(predict(input: inputMatrix))
+        let target = flatten(targetMatrix)
+
+        var errors: [[Double]] = Array(repeating: [], count: weights.count)
+        let last = weights.count - 1
+
+        // output error
+        var outputError: [Double] = []
+        for i in 0..<predicted.count {
+            outputError.append(predicted[i] - target[i])
+        }
+        errors[last] = outputError
+
+        // backpropagation
+        if weights.count > 1 {
+
+            for layer in stride(from: last - 1, through: 0, by: -1) {
+
+                var layerError = Array(repeating: 0.0, count: weights[layer].count)
+
+                for neuron in 0..<weights[layer].count {
+
+                    var sum = 0.0
+
+                    for next in 0..<weights[layer + 1].count {
+                        sum += weights[layer + 1][next][0, neuron] * errors[layer + 1][next]
+                    }
+
+                    let out = layerOutputs[layer][neuron]
+                    layerError[neuron] = sum * reluDerivative(out)
+                }
+
+                errors[layer] = layerError
+            }
+        }
+
+        // weight + bias update
+        for layer in 0..<weights.count {
+
+            let inputs = layer == 0
+                ? flatten(inputMatrix)
+                : layerOutputs[layer - 1]
+
+            for neuron in 0..<weights[layer].count {
+
+                for i in 0..<inputs.count {
+
+                    let grad = errors[layer][neuron] * inputs[i]
+
+                    weights[layer][neuron][0, i] -= learningRate * max(-1.0, min(1.0, grad))
+                }
+
+                bias[layer][neuron, 0] -= learningRate * errors[layer][neuron]
+            }
+        }
+    }
+}
