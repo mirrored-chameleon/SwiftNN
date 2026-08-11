@@ -4,7 +4,7 @@
 [![License: MIT](https://shields.io)](https://opensource.org)
 [![Platform: macOS | Linux | Windows](https://shields.io)](https://swift.org)
 
-SwiftNN is a 100% cross-platform, open-source machine learning library. At the moment, it has completed a variety of tasks, such as playing Space Invaders, doing the XOR test, and acting as a buzzy bee trying to survive the monumental task of finding flowers and returning them to the hive (repo released).
+SwiftNN is a 100% cross-platform, open-source machine learning library. At the moment, it has completed a variety of tasks, such as playing Space Invaders, doing the XOR test, and acting as a buzzy bee trying to survive the monumental task of finding flowers and returning them to the hive (repo coming soon 🐝).
 
 It was built for the science talent search and is designed to be lightweight, simple to import, and requires absolutely zero external dependencies. Built entirely in pure Swift, the entire core architecture fits neatly into just two modular files: the mathematics engine and the primary network blueprint.
 
