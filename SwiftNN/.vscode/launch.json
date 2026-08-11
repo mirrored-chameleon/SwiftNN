@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftNN}",
+            "name": "Debug SwiftNNXORDemo",
+            "target": "SwiftNNXORDemo",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug SwiftNNXORDemo"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:SwiftNN}",
+            "name": "Release SwiftNNXORDemo",
+            "target": "SwiftNNXORDemo",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release SwiftNNXORDemo"
+        }
+    ]
+}
