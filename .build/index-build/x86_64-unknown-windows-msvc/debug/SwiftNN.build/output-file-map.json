@@ -2,19 +2,54 @@
   "": {
     "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\master.swiftdeps"
   },
-  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN.swift": {
-    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNN.d",
-    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNN.swift.o",
-    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNN~partial.swiftmodule",
-    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNN.swiftdeps",
-    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNN.dia"
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Activations.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Activations.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Activations.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Activations~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Activations.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Activations.dia"
   },
-  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNNMaths.swift": {
-    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNMaths.d",
-    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNMaths.swift.o",
-    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNMaths~partial.swiftmodule",
-    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNMaths.swiftdeps",
-    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNMaths.dia"
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Functions.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Functions.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Functions.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Functions~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Functions.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Functions.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Matrix.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Matrix.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Matrix.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Matrix~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Matrix.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Matrix.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Sampling.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Sampling.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Sampling.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Sampling~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Sampling.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Sampling.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Network.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Network.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Network.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Network~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Network.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Network.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Talent.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talent.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talent.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talent~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talent.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talent.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Models\\BasicModel.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\BasicModel.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\BasicModel.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\BasicModel~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\BasicModel.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\BasicModel.dia"
   },
   "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Tests.swift": {
     "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Tests.d",

@@ -1,3 +1,8 @@
-C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\SwiftNN.swift
-C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\SwiftNNMaths.swift
+C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\Core\Maths\Activations.swift
+C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\Core\Maths\Functions.swift
+C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\Core\Maths\Matrix.swift
+C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\Core\Maths\Sampling.swift
+C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\Core\Network.swift
+C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\Core\Talent.swift
+C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\Models\BasicModel.swift
 C:\Users\Student\Development\SwiftNN\Sources\SwiftNN\Tests.swift

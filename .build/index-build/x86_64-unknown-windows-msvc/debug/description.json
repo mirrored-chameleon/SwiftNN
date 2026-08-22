@@ -24,11 +24,31 @@
       "inputs" : [
         {
           "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN.swift"
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Activations.swift"
         },
         {
           "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNNMaths.swift"
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Functions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Matrix.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Sampling.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Network.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Talent.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Models\\BasicModel.swift"
         },
         {
           "kind" : "file",
@@ -47,8 +67,13 @@
       "moduleName" : "SwiftNN",
       "moduleOutputPath" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\Modules\\SwiftNN.swiftmodule",
       "objects" : [
-        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNN.swift.o",
-        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNMaths.swift.o",
+        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Activations.swift.o",
+        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Functions.swift.o",
+        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Matrix.swift.o",
+        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Sampling.swift.o",
+        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Network.swift.o",
+        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talent.swift.o",
+        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\BasicModel.swift.o",
         "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Tests.swift.o"
       ],
       "otherArguments" : [
@@ -120,113 +145,16 @@
       ],
       "prepareForIndexing" : true,
       "sources" : [
-        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN.swift",
-        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNNMaths.swift",
+        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Activations.swift",
+        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Functions.swift",
+        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Matrix.swift",
+        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Sampling.swift",
+        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Network.swift",
+        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Talent.swift",
+        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Models\\BasicModel.swift",
         "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Tests.swift"
       ],
       "tempsPath" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build",
-      "wholeModuleOptimization" : false
-    },
-    "C.SwiftNNXORDemo-x86_64-unknown-windows-msvc-debug.module" : {
-      "executable" : "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.2.3+Asserts\\usr\\bin\\swiftc.exe",
-      "fileList" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNNXORDemo.build\\sources",
-      "importPath" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\Modules",
-      "inputs" : [
-        {
-          "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNNXORDemo\\main.swift"
-        },
-        {
-          "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\swift-version-3DDF4403CA92324F.txt"
-        },
-        {
-          "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\Modules\\SwiftNN.swiftmodule"
-        },
-        {
-          "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNNXORDemo.build\\sources"
-        }
-      ],
-      "isLibrary" : false,
-      "moduleName" : "SwiftNNXORDemo",
-      "moduleOutputPath" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\Modules\\SwiftNNXORDemo.swiftmodule",
-      "objects" : [
-        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNNXORDemo.build\\main.swift.o"
-      ],
-      "otherArguments" : [
-        "-target",
-        "x86_64-unknown-windows-msvc",
-        "-incremental",
-        "-enable-batch-mode",
-        "-serialize-diagnostics",
-        "-Onone",
-        "-enable-testing",
-        "-j12",
-        "-DSWIFT_PACKAGE",
-        "-DDEBUG",
-        "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
-        "-module-cache-path",
-        "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\ModuleCache",
-        "-parseable-output",
-        "-Xfrontend",
-        "-entry-point-function-name",
-        "-Xfrontend",
-        "SwiftNNXORDemo_main",
-        "-static",
-        "-swift-version",
-        "6",
-        "-Xfrontend",
-        "-experimental-lazy-typecheck",
-        "-Xfrontend",
-        "-experimental-skip-all-function-bodies",
-        "-Xfrontend",
-        "-experimental-allow-module-with-compiler-errors",
-        "-Xfrontend",
-        "-empty-abi-descriptor",
-        "-sdk",
-        "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\SDKs\\Windows.sdk\\",
-        "-libc",
-        "MD",
-        "-I",
-        "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\XCTest-6.2.3\\usr\\lib\\swift\\windows",
-        "-I",
-        "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\XCTest-6.2.3\\usr\\lib\\swift\\windows\\x86_64",
-        "-L",
-        "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\XCTest-6.2.3\\usr\\lib\\swift\\windows\\x86_64",
-        "-I",
-        "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\Testing-6.2.3\\usr\\lib\\swift\\windows",
-        "-L",
-        "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\Testing-6.2.3\\usr\\lib\\swift\\windows\\x86_64",
-        "-use-ld=lld",
-        "-g",
-        "-use-ld=lld",
-        "-Xcc",
-        "-D_MT",
-        "-Xcc",
-        "-D_DLL",
-        "-Xcc",
-        "-Xclang",
-        "-Xcc",
-        "--dependent-lib=msvcrt",
-        "-Xcc",
-        "-gdwarf",
-        "-package-name",
-        "swiftnn"
-      ],
-      "outputFileMapPath" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNNXORDemo.build\\output-file-map.json",
-      "outputs" : [
-        {
-          "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\Modules\\SwiftNNXORDemo.swiftmodule"
-        }
-      ],
-      "prepareForIndexing" : true,
-      "sources" : [
-        "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNNXORDemo\\main.swift"
-      ],
-      "tempsPath" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNNXORDemo.build",
       "wholeModuleOptimization" : false
     }
   },
@@ -241,8 +169,13 @@
       "-package-name",
       "swiftnn",
       "-c",
-      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN.swift",
-      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNNMaths.swift",
+      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Activations.swift",
+      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Functions.swift",
+      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Matrix.swift",
+      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Sampling.swift",
+      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Network.swift",
+      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Talent.swift",
+      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Models\\BasicModel.swift",
       "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Tests.swift",
       "-I",
       "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\Modules",
@@ -306,85 +239,11 @@
       "swiftnn",
       "-driver-use-frontend-path",
       "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.2.3+Asserts\\usr\\bin\\swiftc.exe"
-    ],
-    "SwiftNNXORDemo" : [
-      "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.2.3+Asserts\\usr\\bin\\swiftc.exe",
-      "-module-name",
-      "SwiftNNXORDemo",
-      "-package-name",
-      "swiftnn",
-      "-c",
-      "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNNXORDemo\\main.swift",
-      "-I",
-      "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\Modules",
-      "-target",
-      "x86_64-unknown-windows-msvc",
-      "-incremental",
-      "-enable-batch-mode",
-      "-serialize-diagnostics",
-      "-Onone",
-      "-enable-testing",
-      "-j12",
-      "-DSWIFT_PACKAGE",
-      "-DDEBUG",
-      "-DSWIFT_MODULE_RESOURCE_BUNDLE_UNAVAILABLE",
-      "-module-cache-path",
-      "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\ModuleCache",
-      "-parseable-output",
-      "-Xfrontend",
-      "-entry-point-function-name",
-      "-Xfrontend",
-      "SwiftNNXORDemo_main",
-      "-static",
-      "-swift-version",
-      "6",
-      "-Xfrontend",
-      "-experimental-lazy-typecheck",
-      "-Xfrontend",
-      "-experimental-skip-all-function-bodies",
-      "-Xfrontend",
-      "-experimental-allow-module-with-compiler-errors",
-      "-Xfrontend",
-      "-empty-abi-descriptor",
-      "-sdk",
-      "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\SDKs\\Windows.sdk\\",
-      "-libc",
-      "MD",
-      "-I",
-      "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\XCTest-6.2.3\\usr\\lib\\swift\\windows",
-      "-I",
-      "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\XCTest-6.2.3\\usr\\lib\\swift\\windows\\x86_64",
-      "-L",
-      "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\XCTest-6.2.3\\usr\\lib\\swift\\windows\\x86_64",
-      "-I",
-      "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\Testing-6.2.3\\usr\\lib\\swift\\windows",
-      "-L",
-      "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Platforms\\6.2.3\\Windows.platform\\Developer\\Library\\Testing-6.2.3\\usr\\lib\\swift\\windows\\x86_64",
-      "-use-ld=lld",
-      "-g",
-      "-use-ld=lld",
-      "-Xcc",
-      "-D_MT",
-      "-Xcc",
-      "-D_DLL",
-      "-Xcc",
-      "-Xclang",
-      "-Xcc",
-      "--dependent-lib=msvcrt",
-      "-Xcc",
-      "-gdwarf",
-      "-package-name",
-      "swiftnn",
-      "-driver-use-frontend-path",
-      "C:\\Users\\Student\\AppData\\Local\\Programs\\Swift\\Toolchains\\6.2.3+Asserts\\usr\\bin\\swiftc.exe"
     ]
   },
   "targetDependencyMap" : {
     "SwiftNN" : [
 
-    ],
-    "SwiftNNXORDemo" : [
-      "SwiftNN"
     ]
   },
   "testDiscoveryCommands" : {
@@ -408,11 +267,31 @@
         },
         {
           "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN.swift"
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Activations.swift"
         },
         {
           "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNNMaths.swift"
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Functions.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Matrix.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Maths\\Sampling.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Network.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Core\\Talent.swift"
+        },
+        {
+          "kind" : "file",
+          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Models\\BasicModel.swift"
         },
         {
           "kind" : "file",
@@ -420,20 +299,6 @@
         }
       ],
       "outputFilePath" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\sources"
-    },
-    "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNNXORDemo.build\\sources" : {
-      "alwaysOutOfDate" : false,
-      "inputs" : [
-        {
-          "kind" : "virtual",
-          "name" : "<sources-file-list>"
-        },
-        {
-          "kind" : "file",
-          "name" : "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNNXORDemo\\main.swift"
-        }
-      ],
-      "outputFilePath" : "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNNXORDemo.build\\sources"
     },
     "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\swift-version-3DDF4403CA92324F.txt" : {
       "alwaysOutOfDate" : true,

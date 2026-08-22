@@ -1,4 +1,0 @@
-module Surge {
-header "Surge-Swift.h"
-export *
-}
