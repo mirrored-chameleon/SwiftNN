@@ -1,11 +1,21 @@
-# Tell 
-GitHub
- to stop scanning hidden IDE settings for language stats
+# GitHub Linguist configuration
+
+# Hide generated/build artifacts from language statistics
+.build/** linguist-generated
+.swiftpm/** linguist-vendored
+DerivedData/** linguist-generated
+
+# Xcode project metadata
 *.xcodeproj/** linguist-vendored
 *.xcworkspace/** linguist-vendored
-.swiftpm/** linguist-vendored
 
-# If you have any sample data files or headers confusing the system:
+# Treat Objective-C headers as Swift if they are part of Swift source tooling
 *.h linguist-language=Swift
 
-*vers.c linguist-vendored
+# Ignore generated Makefiles from language statistics
+Makefile linguist-vendored
+makefile linguist-vendored
+GNUmakefile linguist-vendored
+
+# Ignore other common generated/project files
+Package.resolved linguist-vendored
