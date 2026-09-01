@@ -51,11 +51,81 @@
     "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\BasicModel.swiftdeps",
     "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\BasicModel.dia"
   },
-  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\Tests.swift": {
-    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Tests.d",
-    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Tests.swift.o",
-    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Tests~partial.swiftmodule",
-    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Tests.swiftdeps",
-    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Tests.dia"
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\FeedForward.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\FeedForward.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\FeedForward.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\FeedForward~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\FeedForward.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\FeedForward.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\OutputProjection.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\OutputProjection.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\OutputProjection.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\OutputProjection~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\OutputProjection.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\OutputProjection.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\PositionalEncoding.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\PositionalEncoding.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\PositionalEncoding.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\PositionalEncoding~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\PositionalEncoding.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\PositionalEncoding.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\SelfAttention.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SelfAttention.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SelfAttention.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SelfAttention~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SelfAttention.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SelfAttention.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\SwiftNNLanguage.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNLanguage.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNLanguage.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNLanguage~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNLanguage.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\SwiftNNLanguage.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\Talents.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talents.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talents.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talents~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talents.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Talents.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\Training.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Training.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Training.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Training~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Training.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Training.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\Transformer.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Transformer.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Transformer.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Transformer~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Transformer.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Transformer.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\TransformerBlock.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\TransformerBlock.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\TransformerBlock.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\TransformerBlock~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\TransformerBlock.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\TransformerBlock.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\Vocabulary.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Vocabulary.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Vocabulary.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Vocabulary~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Vocabulary.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\Vocabulary.dia"
+  },
+  "C:\\Users\\Student\\Development\\SwiftNN\\Sources\\SwiftNN\\SwiftNN Language\\WeightInitialization.swift": {
+    "dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\WeightInitialization.d",
+    "object": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\WeightInitialization.swift.o",
+    "swiftmodule": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\WeightInitialization~partial.swiftmodule",
+    "swift-dependencies": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\WeightInitialization.swiftdeps",
+    "diagnostics": "C:\\Users\\Student\\Development\\SwiftNN\\.build\\index-build\\x86_64-unknown-windows-msvc\\debug\\SwiftNN.build\\WeightInitialization.dia"
   }
 }
