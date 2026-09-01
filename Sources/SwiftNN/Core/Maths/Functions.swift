@@ -42,6 +42,26 @@ public func argmax(_ values: [Double]) -> Int {
 public func clipped(_ value: Double, limit: Double) -> Double {
     return max(-limit, min(limit, value))
 }
+public func addBias(
+    _ matrix: Matrix<Double>,
+    _ bias: Matrix<Double>
+) -> Matrix<Double> {
+
+    precondition(
+        bias.rows == 1 && bias.columns == matrix.columns,
+        "Bias matrix must have one row and match the matrix column count."
+    )
+
+    var result = matrix
+
+    for rowIndex in 0..<result.rows {
+        for columnIndex in 0..<result.columns {
+            result[rowIndex, columnIndex] += bias[0, columnIndex]
+        }
+    }
+
+    return result
+}
 public func flatten(_ matrix: Matrix<Double>) -> [Double] {
 
     var flattenedValues: [Double] = []

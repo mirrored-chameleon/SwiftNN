@@ -27,6 +27,29 @@ public struct Matrix<T: FloatingPoint> {
         }
     }
 
+    public subscript(row: Int) -> [T] {
+        get {
+            precondition(row >= 0 && row < rows, "Row index out of range.")
+
+            let startIndex = row * columns
+            let endIndex = startIndex + columns
+
+            return Array(grid[startIndex..<endIndex])
+        }
+        set {
+            precondition(row >= 0 && row < rows, "Row index out of range.")
+            precondition(
+                newValue.count == columns,
+                "Row must contain exactly \(columns) values."
+            )
+
+            let startIndex = row * columns
+            let endIndex = startIndex + columns
+
+            grid.replaceSubrange(startIndex..<endIndex, with: newValue)
+        }
+    }
+
     static public func * (lhs: T, rhs: Matrix<T>) -> Matrix<T> {
         var result = rhs
         for i in 0..<result.grid.count {
@@ -67,6 +90,16 @@ public struct Matrix<T: FloatingPoint> {
         return dot(lhs, rhs)
     }
 
+    static public func / (lhs: Matrix<T>, rhs: T) -> Matrix<T> {
+        var result = lhs
+
+        for i in 0..<result.grid.count {
+            result.grid[i] = lhs.grid[i] / rhs
+        }
+
+        return result
+    }
+
     static public func dot(_ a: Matrix<T>, _ b: Matrix<T>) -> Matrix<T> {
         precondition(a.columns == b.rows)
 
@@ -80,6 +113,22 @@ public struct Matrix<T: FloatingPoint> {
                     sum = sum + a.grid[i * a.columns + k] * b.grid[k * b.columns + j]
                 }
                 result.grid[i * b.columns + j] = sum
+            }
+        }
+
+        return result
+    }
+
+    public var transposed: Matrix<T> {
+        var result = Matrix<T>(
+            rows: columns,
+            columns: rows,
+            grid: Array(repeating: T.zero, count: grid.count)
+        )
+
+        for row in 0..<rows {
+            for col in 0..<columns {
+                result[col, row] = self[row, col]
             }
         }
 
