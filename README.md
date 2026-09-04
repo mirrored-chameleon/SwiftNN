@@ -33,3 +33,6 @@ Add this package to your `Package.swift` dependencies:
 ## 🥳 Have Fun!
 
 Good luck building upon this repository! I look forward to reviewing your pull requests and contributions. I hope you enjoy experimenting with this architecture as much as I enjoyed designing it. Have fun!
+
+### A note about the file headers
+You may notice Xcode-style file headers at the top of some SwiftNN source files. These were added manually for consistency with Swift/Xcode projects. SwiftNN was developed primarily on a Windows 2-in-1 laptop using VS Code.
