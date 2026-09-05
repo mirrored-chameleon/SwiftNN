@@ -11,17 +11,17 @@ import Foundation
 
 // MARK: - Trainer
 
-struct TrainingExample {
-    let input: Matrix<Double>
-    let target: Matrix<Double>
+public struct TrainingExample {
+    public let input: Matrix<Double>
+    public let target: Matrix<Double>
 }
 
-struct LossResult {
-    let loss: Double
-    let gradient: Matrix<Double>
+public struct LossResult {
+    public let loss: Double
+    public let gradient: Matrix<Double>
 }
 
-func subtractScaled(
+public func subtractScaled(
     _ matrix: inout Matrix<Double>,
     gradient: Matrix<Double>,
     learningRate: Double,
@@ -39,11 +39,11 @@ func subtractScaled(
     }
 }
 
-struct Trainer {
-    var learningRate: Double
-    var epochs: Int
+public struct Trainer {
+    public var learningRate: Double
+    public var epochs: Int
 
-    init(
+    public init(
         learningRate: Double = 0.001,
         epochs: Int = 1000,
     ) {
@@ -53,7 +53,7 @@ struct Trainer {
 
     // MARK: - Training
 
-    mutating func train(
+    public mutating func train(
         examples: [TrainingExample],
         trainingStep: (
             TrainingExample,

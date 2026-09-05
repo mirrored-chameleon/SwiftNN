@@ -13,10 +13,10 @@ import Foundation
 // MARK: - Vocabulary
 
 /// Stores the vocabulary and handles encoding/decoding tokens.
-struct EmbeddingLayer: Codable {
-    var embeddings: Matrix<Double>
+public struct EmbeddingLayer: Codable {
+    public var embeddings: Matrix<Double>
 
-    init(vocabularySize: Int, dims: Int) {
+    public init(vocabularySize: Int, dims: Int) {
         embeddings = randomWeights(
             rows: vocabularySize,
             columns: dims,
@@ -25,11 +25,11 @@ struct EmbeddingLayer: Codable {
 }
 
 public struct Vocabulary: Codable {
-    var tokenToId: [String: Int]
-    var idToToken: [String]
-    var embeddings: EmbeddingLayer
+    public var tokenToId: [String: Int]
+    public var idToToken: [String]
+    public var embeddings: EmbeddingLayer
 
-    init(tokens: [String], dims: Int) {
+    public init(tokens: [String], dims: Int) {
         tokenToId = [:]
         idToToken = []
 
@@ -45,12 +45,12 @@ public struct Vocabulary: Codable {
     }
 
     /// Returns the ID of a token.
-    func id(for token: String) -> Int? {
+    public func id(for token: String) -> Int? {
         tokenToId[token]
     }
 
     /// Returns the embedding vector for a token.
-    func embedding(for token: String) -> [Double]? {
+    public func embedding(for token: String) -> [Double]? {
         guard let id = tokenToId[token] else {
             return nil
         }
@@ -59,7 +59,7 @@ public struct Vocabulary: Codable {
     }
 
     /// Returns the token for an ID.
-    func token(for id: Int) -> String? {
+    public func token(for id: Int) -> String? {
         guard id >= 0, id < idToToken.count else {
             return nil
         }

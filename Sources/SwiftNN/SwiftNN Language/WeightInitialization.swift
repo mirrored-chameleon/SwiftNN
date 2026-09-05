@@ -5,7 +5,7 @@
 
 import Foundation
 
-func randomWeights(
+public func randomWeights(
     rows: Int,
     columns: Int,
     scale: Double = 0.05,

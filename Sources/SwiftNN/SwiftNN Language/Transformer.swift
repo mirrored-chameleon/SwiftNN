@@ -7,15 +7,15 @@
 
 import Foundation
 
-struct Transformer: Codable {
-    let modelDimension: Int
+public struct Transformer: Codable {
+    public let modelDimension: Int
 
-    var vocabulary: Vocabulary
-    var positionalEncoding: SinusoidalPositionalEncoding
-    var blocks: [TransformerBlock]
-    var outputProjection: OutputProjection
+    public var vocabulary: Vocabulary
+    public var positionalEncoding: SinusoidalPositionalEncoding
+    public var blocks: [TransformerBlock]
+    public var outputProjection: OutputProjection
     
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case modelDimension
         case vocabulary
         case positionalEncoding
@@ -23,7 +23,7 @@ struct Transformer: Codable {
         case outputProjection
     }
 
-    init(
+    public init(
         vocabulary: Vocabulary,
         modelDimension: Int,
         hiddenSize: Int,
@@ -77,7 +77,7 @@ struct Transformer: Codable {
 
     // MARK: - Forward
 
-    mutating func forward(
+    public mutating func forward(
         _ input: Matrix<Double>,
     ) -> Matrix<Double> {
         var embeddings: [Double] = []
@@ -133,7 +133,7 @@ struct Transformer: Codable {
 
     // MARK: - Training
 
-    mutating func trainStep(
+    public mutating func trainStep(
         input: Matrix<Double>,
         target: Matrix<Double>,
         learningRate: Double,

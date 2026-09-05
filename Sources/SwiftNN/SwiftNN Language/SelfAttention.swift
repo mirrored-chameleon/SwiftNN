@@ -7,26 +7,26 @@
 
 import Foundation
 
-protocol Attention {
+public protocol Attention {
     mutating func forward(
         _ input: Matrix<Double>,
     ) -> Matrix<Double>
 }
 
-struct SelfAttention: Attention, Codable {
-    var queryWeights: Matrix<Double>
-    var keyWeights: Matrix<Double>
-    var valueWeights: Matrix<Double>
+public struct SelfAttention: Attention, Codable {
+    public var queryWeights: Matrix<Double>
+    public var keyWeights: Matrix<Double>
+    public var valueWeights: Matrix<Double>
 
-    var lastInput: Matrix<Double>?
-    var lastQuery: Matrix<Double>?
-    var lastKey: Matrix<Double>?
-    var lastValue: Matrix<Double>?
-    var lastAttentionWeights: Matrix<Double>?
+    public var lastInput: Matrix<Double>?
+    public var lastQuery: Matrix<Double>?
+    public var lastKey: Matrix<Double>?
+    public var lastValue: Matrix<Double>?
+    public var lastAttentionWeights: Matrix<Double>?
 
     // MARK: - Codable
 
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case queryWeights
         case keyWeights
         case valueWeights
@@ -34,7 +34,7 @@ struct SelfAttention: Attention, Codable {
 
     // MARK: - Forward
 
-    mutating func forward(
+    public mutating func forward(
         _ input: Matrix<Double>,
     ) -> Matrix<Double> {
         lastInput = input
@@ -84,7 +84,7 @@ struct SelfAttention: Attention, Codable {
 
     // MARK: - Backward: Attention Output
 
-    func backwardOutput(
+    public func backwardOutput(
         _ gradient: Matrix<Double>,
     ) -> (
         attentionGradient: Matrix<Double>,
@@ -116,7 +116,7 @@ struct SelfAttention: Attention, Codable {
 
     // MARK: - Backward: Softmax
 
-    func softmaxBackward(
+    public func softmaxBackward(
         _ gradient: Matrix<Double>,
     ) -> Matrix<Double> {
         guard
@@ -169,7 +169,7 @@ struct SelfAttention: Attention, Codable {
 
     // MARK: - Backward: Scores
 
-    func backwardScores(
+    public func backwardScores(
         _ gradient: Matrix<Double>,
     ) -> (
         queryGradient: Matrix<Double>,
@@ -209,7 +209,7 @@ struct SelfAttention: Attention, Codable {
 
     // MARK: - Backward: Weights
 
-    func backwardWeights(
+    public func backwardWeights(
         queryGradient: Matrix<Double>,
         keyGradient: Matrix<Double>,
         valueGradient: Matrix<Double>,
@@ -272,7 +272,7 @@ struct SelfAttention: Attention, Codable {
 
     // MARK: - Init
 
-    init(dimension: Int) {
+    public init(dimension: Int) {
         queryWeights =
             randomWeights(
                 rows: dimension,

@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct TransformerBlock: Codable {
-    var attention: SelfAttention
-    var feedForward: FeedForward
+public struct TransformerBlock: Codable {
+    public var attention: SelfAttention
+    public var feedForward: FeedForward
 
-    init(
+    public init(
         dimension: Int,
         hiddenSize: Int
     ) {
@@ -25,14 +25,14 @@ struct TransformerBlock: Codable {
         )
     }
 
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case attention
         case feedForward
     }
 
     // MARK: - Forward
 
-    mutating func forward(
+    public mutating func forward(
         _ input: Matrix<Double>
     ) -> Matrix<Double> {
         let attentionOutput = attention.forward(input)
@@ -50,7 +50,7 @@ struct TransformerBlock: Codable {
 
     // MARK: - Backward
 
-    mutating func backward(
+    public mutating func backward(
         _ gradient: Matrix<Double>,
         learningRate: Double
     ) -> Matrix<Double> {

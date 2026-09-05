@@ -7,18 +7,18 @@
 
 import Foundation
 
-struct OutputProjection: Codable {
-    var weights: Matrix<Double>
-    var bias: Matrix<Double>
+public struct OutputProjection: Codable {
+    public var weights: Matrix<Double>
+    public var bias: Matrix<Double>
 
-    var lastInput: Matrix<Double>?
+    public var lastInput: Matrix<Double>?
     
-    enum CodingKeys: String, CodingKey {
+    public enum CodingKeys: String, CodingKey {
         case weights
         case bias
     }
 
-    mutating func forward(
+    public mutating func forward(
         _ input: Matrix<Double>,
     ) -> Matrix<Double> {
         lastInput = input
@@ -36,7 +36,7 @@ struct OutputProjection: Codable {
         return result
     }
 
-    func backward(
+    public func backward(
         _ gradient: Matrix<Double>,
     ) -> (
         weightGradient: Matrix<Double>,
