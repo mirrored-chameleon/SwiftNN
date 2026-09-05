@@ -16,7 +16,14 @@ struct LanguageModel: Codable {
     var transformer: Transformer
     let learningRate: Double
     
-    mutating func generate(from input: String, maxTokens: Int) -> String {
+    mutating func generate(
+        from input: String,
+        maxTokens: Int
+    ) throws -> String {
+        guard maxTokens > 0 else {
+            return input
+        }
+        
         var tokens =
         input.split(separator: " ")
             .map(String.init)
@@ -28,7 +35,7 @@ struct LanguageModel: Codable {
                 guard let id =
                         transformer.vocabulary.id(for: token)
                 else {
-                    continue
+                    throw LanguageErrors.unknownToken(token)
                 }
                 
                 inputIDs.append(Double(id))
@@ -81,7 +88,10 @@ struct LanguageModel: Codable {
         return tokens.joined(separator: " ")
     }
     
-    mutating func train(on examples: [(input: String, target: String)], epochs: Int) {
+    mutating func train(
+        on examples: [(input: String, target: String)],
+        epochs: Int
+    ) {
         for epoch in 0 ..< epochs {
             var totalLoss = 0.0
             
