@@ -6,10 +6,8 @@
 //
 
 import Foundation
-import SwiftNN
 
-struct TransformerBlock {
-
+struct TransformerBlock: Codable {
     var attention: SelfAttention
     var feedForward: FeedForward
 
@@ -27,18 +25,18 @@ struct TransformerBlock {
         )
     }
 
+    enum CodingKeys: String, CodingKey {
+        case attention
+        case feedForward
+    }
+
     // MARK: - Forward
 
     mutating func forward(
         _ input: Matrix<Double>
     ) -> Matrix<Double> {
+        let attentionOutput = attention.forward(input)
 
-        let attentionOutput =
-            attention.forward(input)
-
-        // Residual connection:
-        //
-        // input + attention(input)
         let attentionResidual =
             input + attentionOutput
 
@@ -47,13 +45,7 @@ struct TransformerBlock {
                 attentionResidual
             )
 
-        // Second residual connection:
-        //
-        // attentionResidual + feedForward(attentionResidual)
-        let output =
-            attentionResidual + feedForwardOutput
-
-        return output
+        return attentionResidual + feedForwardOutput
     }
 
     // MARK: - Backward
@@ -62,11 +54,6 @@ struct TransformerBlock {
         _ gradient: Matrix<Double>,
         learningRate: Double
     ) -> Matrix<Double> {
-
-        // --------------------------------------------------
-        // Feed-forward backward
-        // --------------------------------------------------
-
         let feedForwardOutput =
             feedForward.backwardOutput(
                 gradient
@@ -77,7 +64,6 @@ struct TransformerBlock {
                 feedForwardOutput.hiddenGradient
             )
 
-        // Update feed-forward weights
         subtractScaled(
             &feedForward.outputWeights,
             gradient:
@@ -110,23 +96,8 @@ struct TransformerBlock {
                 learningRate
         )
 
-        // --------------------------------------------------
-        // First residual connection
-        // --------------------------------------------------
-        //
-        // attentionResidual =
-        //     input + attentionOutput
-        //
-        // Therefore the gradient entering the attention
-        // branch is the gradient from the feed-forward
-        // branch.
-
         let attentionGradient =
             gradient + feedForwardInput.inputGradient
-
-        // --------------------------------------------------
-        // Attention backward
-        // --------------------------------------------------
 
         let attentionOutputGradient =
             attention.backwardOutput(
@@ -147,15 +118,12 @@ struct TransformerBlock {
             attention.backwardWeights(
                 queryGradient:
                     attentionQueriesKeys.queryGradient,
-
                 keyGradient:
                     attentionQueriesKeys.keyGradient,
-
                 valueGradient:
                     attentionOutputGradient.valueGradient
             )
 
-        // Update attention weights
         subtractScaled(
             &attention.queryWeights,
             gradient:
@@ -180,20 +148,7 @@ struct TransformerBlock {
                 learningRate
         )
 
-        // --------------------------------------------------
-        // First residual connection
-        // --------------------------------------------------
-        //
-        // attentionResidual =
-        //     input + attentionOutput
-        //
-        // One gradient comes directly through the residual.
-        // Another comes through attention.
-
-        let inputGradient =
-            attentionGradient
+        return attentionGradient
             + attentionWeights.inputGradient
-
-        return inputGradient
     }
 }

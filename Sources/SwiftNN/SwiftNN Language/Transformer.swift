@@ -6,124 +6,128 @@
 //
 
 import Foundation
-import SwiftNN
 
-struct Transformer {
-
+struct Transformer: Codable {
     let modelDimension: Int
 
     var vocabulary: Vocabulary
     var positionalEncoding: SinusoidalPositionalEncoding
     var blocks: [TransformerBlock]
     var outputProjection: OutputProjection
+    
+    enum CodingKeys: String, CodingKey {
+        case modelDimension
+        case vocabulary
+        case positionalEncoding
+        case blocks
+        case outputProjection
+    }
 
     init(
         vocabulary: Vocabulary,
         modelDimension: Int,
         hiddenSize: Int,
-        numberOfBlocks: Int
+        numberOfBlocks: Int,
     ) {
         precondition(
             modelDimension > 0,
-            "Model dimension must be greater than zero."
+            "Model dimension must be greater than zero.",
         )
 
         self.modelDimension = modelDimension
         self.vocabulary = vocabulary
-        self.positionalEncoding =
+        positionalEncoding =
             SinusoidalPositionalEncoding()
 
         var blocks: [TransformerBlock] = []
 
-        for _ in 0..<numberOfBlocks {
+        for _ in 0 ..< numberOfBlocks {
             blocks.append(
                 TransformerBlock(
                     dimension: modelDimension,
-                    hiddenSize: hiddenSize
-                )
+                    hiddenSize: hiddenSize,
+                ),
             )
         }
 
         self.blocks = blocks
 
-        self.outputProjection =
+        outputProjection =
             OutputProjection(
                 weights:
-                    Matrix<Double>.random(
-                        rows: modelDimension,
-                        columns:
-                            vocabulary.idToToken.count
-                    ),
+                Matrix<Double>.random(
+                    rows: modelDimension,
+                    columns:
+                    vocabulary.idToToken.count,
+                ),
                 bias:
-                    Matrix<Double>(
-                        rows: 1,
-                        columns:
-                            vocabulary.idToToken.count,
-                        grid:
-                            Array(
-                                repeating: 0.0,
-                                count:
-                                    vocabulary.idToToken.count
-                            )
-                    )
+                Matrix<Double>(
+                    rows: 1,
+                    columns:
+                    vocabulary.idToToken.count,
+                    grid:
+                    Array(
+                        repeating: 0.0,
+                        count:
+                        vocabulary.idToToken.count,
+                    ),
+                ),
             )
     }
 
     // MARK: - Forward
 
     mutating func forward(
-        _ input: Matrix<Double>
+        _ input: Matrix<Double>,
     ) -> Matrix<Double> {
-
         var embeddings: [Double] = []
 
         for value in input.grid {
-
             let id = Int(value)
 
             guard
                 let token =
-                    vocabulary.token(for: id),
+                vocabulary.token(for: id),
                 let embedding =
-                    vocabulary.embedding(
-                        for: token
-                    )
+                vocabulary.embedding(
+                    for: token,
+                )
             else {
                 continue
             }
 
             embeddings.append(
-                contentsOf: embedding
+                contentsOf: embedding,
             )
         }
 
         precondition(
             embeddings.count ==
                 input.rows * modelDimension,
-            "Embedding output has incorrect dimensions."
+            "Embedding output has incorrect dimensions.",
         )
 
         var output =
             Matrix(
                 rows: input.rows,
                 columns: modelDimension,
-                grid: embeddings
+                grid: embeddings,
             )
 
         output =
             positionalEncoding.forward(
-                output
+                output,
             )
 
         for index in blocks.indices {
             output =
                 blocks[index].forward(
-                    output
+                    output,
                 )
         }
 
         return outputProjection.forward(
-            output
+            output,
         )
     }
 
@@ -132,9 +136,8 @@ struct Transformer {
     mutating func trainStep(
         input: Matrix<Double>,
         target: Matrix<Double>,
-        learningRate: Double
+        learningRate: Double,
     ) -> Double {
-
         let prediction = forward(input)
 
         let lastRow =
@@ -158,7 +161,7 @@ struct Transformer {
         let total =
             exponentials.reduce(
                 0.0,
-                +
+                +,
             )
 
         let probabilities =
@@ -172,20 +175,18 @@ struct Transformer {
 
         var loss = 0.0
 
-        for column in 0..<prediction.columns {
-
+        for column in 0 ..< prediction.columns {
             let targetValue =
                 target[0, column]
 
             if targetValue > 0.0 {
-
                 loss -=
                     targetValue *
                     log(
                         max(
                             probabilities[column],
-                            1e-12
-                        )
+                            1e-12,
+                        ),
                     )
             }
         }
@@ -199,22 +200,21 @@ struct Transformer {
                 rows: prediction.rows,
                 columns: prediction.columns,
                 grid:
-                    Array(
-                        repeating: 0.0,
-                        count:
-                            prediction.rows *
-                            prediction.columns
-                    )
+                Array(
+                    repeating: 0.0,
+                    count:
+                    prediction.rows *
+                        prediction.columns,
+                ),
             )
 
-        for column in 0..<prediction.columns {
-
+        for column in 0 ..< prediction.columns {
             fullGradient[
                 lastRow,
-                column
+                column,
             ] =
                 probabilities[column]
-                - target[0, column]
+                    - target[0, column]
         }
 
         // --------------------------------------------------
@@ -223,23 +223,23 @@ struct Transformer {
 
         let outputGradients =
             outputProjection.backward(
-                fullGradient
+                fullGradient,
             )
 
         subtractScaled(
             &outputProjection.weights,
             gradient:
-                outputGradients.weightGradient,
+            outputGradients.weightGradient,
             learningRate:
-                learningRate
+            learningRate,
         )
 
         subtractScaled(
             &outputProjection.bias,
             gradient:
-                outputGradients.biasGradient,
+            outputGradients.biasGradient,
             learningRate:
-                learningRate
+            learningRate,
         )
 
         // --------------------------------------------------
@@ -250,12 +250,11 @@ struct Transformer {
             outputGradients.inputGradient
 
         for index in blocks.indices.reversed() {
-
             blockGradient =
                 blocks[index].backward(
                     blockGradient,
                     learningRate:
-                        learningRate
+                    learningRate,
                 )
         }
 
@@ -266,7 +265,7 @@ struct Transformer {
         updateEmbeddings(
             input: input,
             gradient: blockGradient,
-            learningRate: learningRate
+            learningRate: learningRate,
         )
 
         return loss
@@ -277,45 +276,42 @@ struct Transformer {
     private mutating func updateEmbeddings(
         input: Matrix<Double>,
         gradient: Matrix<Double>,
-        learningRate: Double
+        learningRate: Double,
     ) {
-
         precondition(
             gradient.rows == input.rows,
-            "Embedding gradient row count must match input."
+            "Embedding gradient row count must match input.",
         )
 
         precondition(
             gradient.columns == modelDimension,
-            "Embedding gradient dimension must match model dimension."
+            "Embedding gradient dimension must match model dimension.",
         )
 
-        for row in 0..<input.rows {
-
+        for row in 0 ..< input.rows {
             let tokenID =
                 Int(input[row, 0])
 
             guard
                 tokenID >= 0,
                 tokenID <
-                    vocabulary.embeddings.embeddings.rows
+                vocabulary.embeddings.embeddings.rows
             else {
                 continue
             }
 
-            for column in 0..<modelDimension {
-
+            for column in 0 ..< modelDimension {
                 vocabulary
                     .embeddings
                     .embeddings[
                         tokenID,
-                        column
+                        column,
                     ] -=
-                        learningRate *
-                        gradient[
-                            row,
-                            column
-                        ]
+                    learningRate *
+                    gradient[
+                        row,
+                        column,
+                    ]
             }
         }
     }

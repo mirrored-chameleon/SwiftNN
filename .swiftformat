@@ -1,0 +1,3 @@
+--swift-version 6.2
+--wrap-parameters disabled
+--wrap-return-type never

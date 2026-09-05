@@ -6,16 +6,14 @@
 //
 
 import Foundation
-import SwiftNN
 
 protocol Attention {
     mutating func forward(
-        _ input: Matrix<Double>
+        _ input: Matrix<Double>,
     ) -> Matrix<Double>
 }
 
-struct SelfAttention: Attention {
-
+struct SelfAttention: Attention, Codable {
     var queryWeights: Matrix<Double>
     var keyWeights: Matrix<Double>
     var valueWeights: Matrix<Double>
@@ -26,12 +24,19 @@ struct SelfAttention: Attention {
     var lastValue: Matrix<Double>?
     var lastAttentionWeights: Matrix<Double>?
 
+    // MARK: - Codable
+
+    enum CodingKeys: String, CodingKey {
+        case queryWeights
+        case keyWeights
+        case valueWeights
+    }
+
     // MARK: - Forward
 
     mutating func forward(
-        _ input: Matrix<Double>
+        _ input: Matrix<Double>,
     ) -> Matrix<Double> {
-
         lastInput = input
 
         let query =
@@ -63,11 +68,11 @@ struct SelfAttention: Attention {
             rows: scaledScores.rows,
             columns: scaledScores.columns,
             grid:
-                (0..<scaledScores.rows).flatMap { row in
-                    softmax(
-                        scaledScores[row]
-                    )
-                }
+            (0 ..< scaledScores.rows).flatMap { row in
+                softmax(
+                    scaledScores[row],
+                )
+            },
         )
 
         lastAttentionWeights =
@@ -80,19 +85,18 @@ struct SelfAttention: Attention {
     // MARK: - Backward: Attention Output
 
     func backwardOutput(
-        _ gradient: Matrix<Double>
+        _ gradient: Matrix<Double>,
     ) -> (
         attentionGradient: Matrix<Double>,
-        valueGradient: Matrix<Double>
+        valueGradient: Matrix<Double>,
     ) {
-
         guard
             let value = lastValue,
             let attentionWeights =
-                lastAttentionWeights
+            lastAttentionWeights
         else {
             fatalError(
-                "SelfAttention backward called before forward."
+                "SelfAttention backward called before forward.",
             )
         }
 
@@ -106,22 +110,21 @@ struct SelfAttention: Attention {
 
         return (
             attentionGradient,
-            valueGradient
+            valueGradient,
         )
     }
 
     // MARK: - Backward: Softmax
 
     func softmaxBackward(
-        _ gradient: Matrix<Double>
+        _ gradient: Matrix<Double>,
     ) -> Matrix<Double> {
-
         guard
             let attentionWeights =
-                lastAttentionWeights
+            lastAttentionWeights
         else {
             fatalError(
-                "Softmax backward called before forward."
+                "Softmax backward called before forward.",
             )
         }
 
@@ -131,13 +134,12 @@ struct SelfAttention: Attention {
             grid: Array(
                 repeating: 0.0,
                 count:
-                    gradient.rows *
-                    gradient.columns
-            )
+                gradient.rows *
+                    gradient.columns,
+            ),
         )
 
-        for row in 0..<gradient.rows {
-
+        for row in 0 ..< gradient.rows {
             let weights =
                 attentionWeights[row]
 
@@ -146,19 +148,18 @@ struct SelfAttention: Attention {
 
             var dotProduct = 0.0
 
-            for column in 0..<gradient.columns {
+            for column in 0 ..< gradient.columns {
                 dotProduct +=
                     incoming[column] *
                     weights[column]
             }
 
-            for column in 0..<gradient.columns {
-
+            for column in 0 ..< gradient.columns {
                 result[row, column] =
                     weights[column] *
                     (
                         incoming[column]
-                        - dotProduct
+                            - dotProduct
                     )
             }
         }
@@ -169,18 +170,17 @@ struct SelfAttention: Attention {
     // MARK: - Backward: Scores
 
     func backwardScores(
-        _ gradient: Matrix<Double>
+        _ gradient: Matrix<Double>,
     ) -> (
         queryGradient: Matrix<Double>,
-        keyGradient: Matrix<Double>
+        keyGradient: Matrix<Double>,
     ) {
-
         guard
             let query = lastQuery,
             let key = lastKey
         else {
             fatalError(
-                "Score backward called before forward."
+                "Score backward called before forward.",
             )
         }
 
@@ -203,7 +203,7 @@ struct SelfAttention: Attention {
 
         return (
             queryGradient,
-            keyGradient
+            keyGradient,
         )
     }
 
@@ -212,19 +212,18 @@ struct SelfAttention: Attention {
     func backwardWeights(
         queryGradient: Matrix<Double>,
         keyGradient: Matrix<Double>,
-        valueGradient: Matrix<Double>
+        valueGradient: Matrix<Double>,
     ) -> (
         queryWeightGradient: Matrix<Double>,
         keyWeightGradient: Matrix<Double>,
         valueWeightGradient: Matrix<Double>,
-        inputGradient: Matrix<Double>
+        inputGradient: Matrix<Double>,
     ) {
-
         guard
             let input = lastInput
         else {
             fatalError(
-                "Weight backward called before forward."
+                "Weight backward called before forward.",
             )
         }
 
@@ -260,37 +259,36 @@ struct SelfAttention: Attention {
         // the same input.
         let inputGradient =
             queryInputGradient
-            + keyInputGradient
-            + valueInputGradient
+                + keyInputGradient
+                + valueInputGradient
 
         return (
             queryWeightGradient,
             keyWeightGradient,
             valueWeightGradient,
-            inputGradient
+            inputGradient,
         )
     }
 
     // MARK: - Init
 
     init(dimension: Int) {
-
         queryWeights =
             randomWeights(
                 rows: dimension,
-                columns: dimension
+                columns: dimension,
             )
 
         keyWeights =
             randomWeights(
                 rows: dimension,
-                columns: dimension
+                columns: dimension,
             )
 
         valueWeights =
             randomWeights(
                 rows: dimension,
-                columns: dimension
+                columns: dimension,
             )
     }
 }

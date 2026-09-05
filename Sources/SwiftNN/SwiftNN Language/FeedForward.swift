@@ -6,34 +6,36 @@
 //
 
 import Foundation
-import SwiftNN
 
 protocol FeedForwardLayer {
     mutating func forward(_ input: Matrix<Double>) -> Matrix<Double>
 }
 
-struct FeedForward: FeedForwardLayer {
-
+struct FeedForward: FeedForwardLayer, Codable {
     var lastInput: Matrix<Double>?
     var lastHiddenPreActivation: Matrix<Double>?
     var lastHidden: Matrix<Double>?
-
     var inputWeights: Matrix<Double>
     var inputBias: Matrix<Double>
-
     var outputWeights: Matrix<Double>
     var outputBias: Matrix<Double>
 
+    enum CodingKeys: String, CodingKey {
+        case inputWeights
+        case inputBias
+        case outputWeights
+        case outputBias
+    }
+    
     mutating func forward(
-        _ input: Matrix<Double>
-    ) -> Matrix<Double> {
-
+        _ input: Matrix<Double>) -> Matrix<Double>
+    {
         lastInput = input
 
         let hiddenPreActivation =
             addBias(
                 input * inputWeights,
-                inputBias
+                inputBias,
             )
 
         lastHiddenPreActivation =
@@ -45,23 +47,19 @@ struct FeedForward: FeedForwardLayer {
         lastHidden =
             hidden
 
-        let output =
-            addBias(
-                hidden * outputWeights,
-                outputBias
-            )
-
-        return output
+        return addBias(
+            hidden * outputWeights,
+            outputBias,
+        )
     }
 
     func backwardOutput(
-        _ gradient: Matrix<Double>
+        _ gradient: Matrix<Double>,
     ) -> (
         weightGradient: Matrix<Double>,
         biasGradient: Matrix<Double>,
-        hiddenGradient: Matrix<Double>
+        hiddenGradient: Matrix<Double>,
     ) {
-
         guard let hidden = lastHidden else {
             fatalError("FeedForward backward called before forward.")
         }
@@ -75,12 +73,12 @@ struct FeedForward: FeedForwardLayer {
                 columns: gradient.columns,
                 grid: Array(
                     repeating: 0.0,
-                    count: gradient.columns
-                )
+                    count: gradient.columns,
+                ),
             )
 
-        for row in 0..<gradient.rows {
-            for column in 0..<gradient.columns {
+        for row in 0 ..< gradient.rows {
+            for column in 0 ..< gradient.columns {
                 biasGradient[0, column] += gradient[row, column]
             }
         }
@@ -91,18 +89,17 @@ struct FeedForward: FeedForwardLayer {
         return (
             weightGradient,
             biasGradient,
-            hiddenGradient
+            hiddenGradient,
         )
     }
 
     func backwardInput(
-        _ gradient: Matrix<Double>
+        _ gradient: Matrix<Double>,
     ) -> (
         weightGradient: Matrix<Double>,
         biasGradient: Matrix<Double>,
-        inputGradient: Matrix<Double>
+        inputGradient: Matrix<Double>,
     ) {
-
         guard
             let input = lastInput,
             let preActivation = lastHiddenPreActivation
@@ -116,13 +113,12 @@ struct FeedForward: FeedForwardLayer {
                 columns: gradient.columns,
                 grid: Array(
                     repeating: 0.0,
-                    count: gradient.rows * gradient.columns
-                )
+                    count: gradient.rows * gradient.columns,
+                ),
             )
 
-        for row in 0..<gradient.rows {
-            for column in 0..<gradient.columns {
-
+        for row in 0 ..< gradient.rows {
+            for column in 0 ..< gradient.columns {
                 if preActivation[row, column] > 0.0 {
                     reluGradient[row, column] =
                         gradient[row, column]
@@ -139,12 +135,12 @@ struct FeedForward: FeedForwardLayer {
                 columns: reluGradient.columns,
                 grid: Array(
                     repeating: 0.0,
-                    count: reluGradient.columns
-                )
+                    count: reluGradient.columns,
+                ),
             )
 
-        for row in 0..<reluGradient.rows {
-            for column in 0..<reluGradient.columns {
+        for row in 0 ..< reluGradient.rows {
+            for column in 0 ..< reluGradient.columns {
                 biasGradient[0, column] +=
                     reluGradient[row, column]
             }
@@ -156,19 +152,18 @@ struct FeedForward: FeedForwardLayer {
         return (
             weightGradient,
             biasGradient,
-            inputGradient
+            inputGradient,
         )
     }
 
     init(
         inputSize: Int,
-        hiddenSize: Int
+        hiddenSize: Int,
     ) {
-
         inputWeights =
             randomWeights(
                 rows: inputSize,
-                columns: hiddenSize
+                columns: hiddenSize,
             )
 
         inputBias =
@@ -177,14 +172,14 @@ struct FeedForward: FeedForwardLayer {
                 columns: hiddenSize,
                 grid: Array(
                     repeating: 0.0,
-                    count: hiddenSize
-                )
+                    count: hiddenSize,
+                ),
             )
 
         outputWeights =
             randomWeights(
                 rows: hiddenSize,
-                columns: inputSize
+                columns: inputSize,
             )
 
         outputBias =
@@ -193,8 +188,8 @@ struct FeedForward: FeedForwardLayer {
                 columns: inputSize,
                 grid: Array(
                     repeating: 0.0,
-                    count: inputSize
-                )
+                    count: inputSize,
+                ),
             )
     }
 }

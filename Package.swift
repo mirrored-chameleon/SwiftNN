@@ -8,12 +8,12 @@ let package = Package(
     products: [
         .library(
             name: "SwiftNN",
-            targets: ["SwiftNN"]
-        )
+            targets: ["SwiftNN"],
+        ),
     ],
     targets: [
         .target(
-            name: "SwiftNN"
-        )
-    ]
+            name: "SwiftNN",
+        ),
+    ],
 )

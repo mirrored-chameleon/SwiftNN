@@ -1,25 +1,20 @@
 //
-//  Positional_Encoding.swift
+//  PositionalEncoding.swift
 //  SwiftNN Language
 //
 //  Created by Davyn Monagle on 23/07/2026.
 //
 
-import SwiftNN
 import Foundation
 
 public protocol PositionalEncoding {
-
     func forward(_ embeddings: Matrix<Double>) -> Matrix<Double>
-
 }
 
-public struct SinusoidalPositionalEncoding: PositionalEncoding {
-
+public struct SinusoidalPositionalEncoding: PositionalEncoding, Codable {
     public init() {}
 
     public func forward(_ embeddings: Matrix<Double>) -> Matrix<Double> {
-
         let sequenceLength = embeddings.rows
         let embeddingSize = embeddings.columns
 
@@ -28,19 +23,17 @@ public struct SinusoidalPositionalEncoding: PositionalEncoding {
             columns: embeddingSize,
             grid: Array(
                 repeating: 0.0,
-                count: sequenceLength * embeddingSize
-            )
+                count: sequenceLength * embeddingSize,
+            ),
         )
 
-        for position in 0..<sequenceLength {
-
-            for dimension in 0..<embeddingSize {
-
+        for position in 0 ..< sequenceLength {
+            for dimension in 0 ..< embeddingSize {
                 let i = dimension / 2
 
                 let denominator = pow(
                     10000.0,
-                    Double(2 * i) / Double(embeddingSize)
+                    Double(2 * i) / Double(embeddingSize),
                 )
 
                 let angle = Double(position) / denominator

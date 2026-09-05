@@ -7,37 +7,35 @@
 
 // MARK: - Embeddings
 
-/// Handles storing the embedding matrix.
-import SwiftNN
+// Handles storing the embedding matrix.
+import Foundation
 
 // MARK: - Vocabulary
 
 /// Stores the vocabulary and handles encoding/decoding tokens.
-struct EmbeddingLayer {
-
+struct EmbeddingLayer: Codable {
     var embeddings: Matrix<Double>
 
     init(vocabularySize: Int, dims: Int) {
         embeddings = randomWeights(
             rows: vocabularySize,
-            columns: dims
+            columns: dims,
         )
     }
 }
-public struct Vocabulary {
 
+public struct Vocabulary: Codable {
     var tokenToId: [String: Int]
     var idToToken: [String]
     var embeddings: EmbeddingLayer
 
     init(tokens: [String], dims: Int) {
-
         tokenToId = [:]
         idToToken = []
 
         embeddings = EmbeddingLayer(
             vocabularySize: tokens.count,
-            dims: dims
+            dims: dims,
         )
 
         for (id, token) in tokens.enumerated() {
@@ -53,7 +51,6 @@ public struct Vocabulary {
 
     /// Returns the embedding vector for a token.
     func embedding(for token: String) -> [Double]? {
-
         guard let id = tokenToId[token] else {
             return nil
         }
@@ -63,8 +60,7 @@ public struct Vocabulary {
 
     /// Returns the token for an ID.
     func token(for id: Int) -> String? {
-
-        guard id >= 0 && id < idToToken.count else {
+        guard id >= 0, id < idToToken.count else {
             return nil
         }
 
