@@ -12,28 +12,42 @@ public enum LanguageErrors: Error {
     case unknownToken(String)
 }
 
-public struct LanguageModel: Codable {
+public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
     public var transformer: Transformer
+    public var vocabulary: Vocabulary<TokenizerType.Token>
+    public let tokenizer: TokenizerType
     public let learningRate: Double
 
-    public init(transformer: Transformer, learningRate: Double) {
+    public init(
+        transformer: Transformer,
+        vocabulary: Vocabulary<TokenizerType.Token>,
+        tokenizer: TokenizerType,
+        learningRate: Double
+    ) {
         self.transformer = transformer
+        self.vocabulary = vocabulary
+        self.tokenizer = tokenizer
         self.learningRate = learningRate
     }
 
-    public mutating func generate(from input: String, maxTokens: Int) throws -> String {
+    public mutating func generate(
+        from input: TokenizerType.Input,
+        maxTokens: Int
+    ) throws -> TokenizerType.Input {
         guard maxTokens > 0 else {
             return input
         }
 
-        var tokens = input.split(separator: " ").map(String.init)
+        var tokens = tokenizer.tokenize(input)
 
         for _ in 0 ..< maxTokens {
             var inputIDs: [Double] = []
 
             for token in tokens {
-                guard let id = transformer.vocabulary.id(for: token) else {
-                    throw LanguageErrors.unknownToken(token)
+                guard let id = vocabulary.id(for: token) else {
+                    throw LanguageErrors.unknownToken(
+                        String(describing: token)
+                    )
                 }
 
                 inputIDs.append(Double(id))
@@ -59,29 +73,31 @@ public struct LanguageModel: Codable {
                 break
             }
 
-            guard let nextToken = transformer.vocabulary.token(for: nextTokenID) else {
+            if let endTokenID = vocabulary.endTokenID,
+               nextTokenID == endTokenID
+            {
                 break
             }
 
-            if nextToken == "<end>" {
+            guard let nextToken = vocabulary.token(for: nextTokenID) else {
                 break
             }
 
             tokens.append(nextToken)
         }
 
-        return tokens.joined(separator: " ")
+        return tokenizer.detokenize(tokens)
     }
 
     public mutating func train(
-        on examples: [(input: String, target: String)],
+        on examples: [(input: TokenizerType.Input, target: TokenizerType.Input)],
         epochs: Int
     ) {
         guard epochs > 0 else {
             return
         }
 
-        guard let endTokenID = transformer.vocabulary.id(for: "<end>") else {
+        guard let endTokenID = vocabulary.endTokenID else {
             return
         }
 
@@ -90,13 +106,13 @@ public struct LanguageModel: Codable {
             var tokenCount = 0
 
             for example in examples.shuffled() {
-                let inputTokens = example.input.split(separator: " ")
-                let targetTokens = example.target.split(separator: " ")
+                let inputTokens = tokenizer.tokenize(example.input)
+                let targetTokens = tokenizer.tokenize(example.target)
 
                 var sequenceIDs: [Double] = []
 
                 for token in inputTokens {
-                    guard let id = transformer.vocabulary.id(for: String(token)) else {
+                    guard let id = vocabulary.id(for: token) else {
                         continue
                     }
 
@@ -110,7 +126,7 @@ public struct LanguageModel: Codable {
                 var targetIDs: [Int] = []
 
                 for token in targetTokens {
-                    guard let id = transformer.vocabulary.id(for: String(token)) else {
+                    guard let id = vocabulary.id(for: token) else {
                         continue
                     }
 
@@ -128,7 +144,7 @@ public struct LanguageModel: Codable {
                         grid: sequenceIDs
                     )
 
-                    let vocabularySize = transformer.vocabulary.idToToken.count
+                    let vocabularySize = transformer.vocabularySize
 
                     var target = Matrix<Double>(
                         rows: 1,
@@ -159,7 +175,7 @@ public struct LanguageModel: Codable {
                     grid: sequenceIDs
                 )
 
-                let vocabularySize = transformer.vocabulary.idToToken.count
+                let vocabularySize = transformer.vocabularySize
 
                 var endTarget = Matrix<Double>(
                     rows: 1,
@@ -205,14 +221,31 @@ public struct LanguageModel: Codable {
         return json
     }
 
-    public static func `import`(from json: String) throws -> LanguageModel {
+    public static func `import`(from json: String) throws -> SequenceModel {
         guard let data = json.data(using: .utf8) else {
             throw LanguageErrors.unsupportedData
         }
 
         return try JSONDecoder().decode(
-            LanguageModel.self,
+            SequenceModel.self,
             from: data
+        )
+    }
+}
+
+public typealias LanguageModel = SequenceModel<WhitespaceTokenizer>
+
+public extension SequenceModel where TokenizerType == WhitespaceTokenizer {
+    init(
+        transformer: Transformer,
+        vocabulary: TextVocabulary,
+        learningRate: Double
+    ) {
+        self.init(
+            transformer: transformer,
+            vocabulary: vocabulary,
+            tokenizer: WhitespaceTokenizer(),
+            learningRate: learningRate
         )
     }
 }
