@@ -16,33 +16,23 @@ public struct LanguageModel: Codable {
     public var transformer: Transformer
     public let learningRate: Double
 
-    public init(
-        transformer: Transformer,
-        learningRate: Double
-    ) {
+    public init(transformer: Transformer, learningRate: Double) {
         self.transformer = transformer
         self.learningRate = learningRate
     }
 
-    public mutating func generate(
-        from input: String,
-        maxTokens: Int
-    ) throws -> String {
+    public mutating func generate(from input: String, maxTokens: Int) throws -> String {
         guard maxTokens > 0 else {
             return input
         }
 
-        var tokens =
-        input.split(separator: " ")
-            .map(String.init)
+        var tokens = input.split(separator: " ").map(String.init)
 
         for _ in 0 ..< maxTokens {
             var inputIDs: [Double] = []
 
             for token in tokens {
-                guard let id =
-                        transformer.vocabulary.id(for: token)
-                else {
+                guard let id = transformer.vocabulary.id(for: token) else {
                     throw LanguageErrors.unknownToken(token)
                 }
 
@@ -56,41 +46,28 @@ public struct LanguageModel: Codable {
             let input = Matrix<Double>(
                 rows: inputIDs.count,
                 columns: 1,
-                grid: inputIDs,
+                grid: inputIDs
             )
 
-            let prediction =
-            transformer.forward(input)
+            let prediction = transformer.forward(input)
+            let lastRow = prediction.rows - 1
+            let logits = prediction[lastRow]
 
-            let lastRow =
-            prediction.rows - 1
-
-            let logits =
-            prediction[lastRow]
-
-            guard let nextTokenID =
-                    logits.indices.max(
-                        by: {
-                            logits[$0] < logits[$1]
-                        },
-                    )
-            else {
+            guard let nextTokenID = logits.indices.max(by: {
+                logits[$0] < logits[$1]
+            }) else {
                 break
             }
 
-            guard let nextToken =
-                    transformer.vocabulary.token(
-                        for: nextTokenID,
-                    )
-            else {
+            guard let nextToken = transformer.vocabulary.token(for: nextTokenID) else {
                 break
             }
-
-            tokens.append(nextToken)
 
             if nextToken == "<end>" {
                 break
             }
+
+            tokens.append(nextToken)
         }
 
         return tokens.joined(separator: " ")
@@ -100,87 +77,117 @@ public struct LanguageModel: Codable {
         on examples: [(input: String, target: String)],
         epochs: Int
     ) {
+        guard epochs > 0 else {
+            return
+        }
+
+        guard let endTokenID = transformer.vocabulary.id(for: "<end>") else {
+            return
+        }
 
         for epoch in 0 ..< epochs {
             var totalLoss = 0.0
+            var tokenCount = 0
 
-            for example in examples {
-                let inputTokens =
-                example.input.split(separator: " ")
+            for example in examples.shuffled() {
+                let inputTokens = example.input.split(separator: " ")
+                let targetTokens = example.target.split(separator: " ")
 
-                let targetTokens =
-                example.target.split(separator: " ")
-
-                var inputIDs: [Double] = []
+                var sequenceIDs: [Double] = []
 
                 for token in inputTokens {
-                    guard let id =
-                            transformer.vocabulary.id(
-                                for: String(token),
-                            )
-                    else {
+                    guard let id = transformer.vocabulary.id(for: String(token)) else {
                         continue
                     }
 
-                    inputIDs.append(Double(id))
+                    sequenceIDs.append(Double(id))
                 }
 
-                var targetIDs: [Double] = []
-
-                for token in targetTokens {
-                    guard let id =
-                            transformer.vocabulary.id(
-                                for: String(token),
-                            )
-                    else {
-                        continue
-                    }
-
-                    targetIDs.append(Double(id))
-                }
-
-                guard
-                    !inputIDs.isEmpty,
-                    !targetIDs.isEmpty
-                else {
+                guard !sequenceIDs.isEmpty else {
                     continue
                 }
 
+                var targetIDs: [Int] = []
+
+                for token in targetTokens {
+                    guard let id = transformer.vocabulary.id(for: String(token)) else {
+                        continue
+                    }
+
+                    targetIDs.append(id)
+                }
+
+                guard !targetIDs.isEmpty else {
+                    continue
+                }
+
+                for targetID in targetIDs {
+                    let input = Matrix<Double>(
+                        rows: sequenceIDs.count,
+                        columns: 1,
+                        grid: sequenceIDs
+                    )
+
+                    let vocabularySize = transformer.vocabulary.idToToken.count
+
+                    var target = Matrix<Double>(
+                        rows: 1,
+                        columns: vocabularySize,
+                        grid: Array(
+                            repeating: 0.0,
+                            count: vocabularySize
+                        )
+                    )
+
+                    target[0, targetID] = 1.0
+
+                    let loss = transformer.trainStep(
+                        input: input,
+                        target: target,
+                        learningRate: learningRate
+                    )
+
+                    totalLoss += loss
+                    tokenCount += 1
+
+                    sequenceIDs.append(Double(targetID))
+                }
+
                 let input = Matrix<Double>(
-                    rows: inputIDs.count,
+                    rows: sequenceIDs.count,
                     columns: 1,
-                    grid: inputIDs,
+                    grid: sequenceIDs
                 )
 
-                let targetID =
-                targetIDs[targetIDs.count - 1]
+                let vocabularySize = transformer.vocabulary.idToToken.count
 
-                let vocabularySize =
-                transformer.vocabulary.idToToken.count
-
-                var target = Matrix<Double>(
+                var endTarget = Matrix<Double>(
                     rows: 1,
                     columns: vocabularySize,
                     grid: Array(
                         repeating: 0.0,
-                        count: vocabularySize,
-                    ),
+                        count: vocabularySize
+                    )
                 )
 
-                target[0, Int(targetID)] = 1.0
+                endTarget[0, endTokenID] = 1.0
 
-                let loss =
-                transformer.trainStep(
+                let endLoss = transformer.trainStep(
                     input: input,
-                    target: target,
-                    learningRate: learningRate,
+                    target: endTarget,
+                    learningRate: learningRate
                 )
 
-                totalLoss += loss
+                totalLoss += endLoss
+                tokenCount += 1
             }
 
+            let averageLoss = tokenCount > 0
+                ? totalLoss / Double(tokenCount)
+                : 0.0
+
             print(
-                "Epoch \(epoch) Loss: \(totalLoss)",
+                "Epoch \(epoch) Loss: \(totalLoss) Average Loss: \(averageLoss)"
             )
         }
     }
