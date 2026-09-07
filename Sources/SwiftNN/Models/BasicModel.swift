@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct BasicModel: Network {
-    public var talent: any Talent
+public struct BasicModel<TalentType: Talent>: Network {
+    public var talent: TalentType
     public var weights: [[Matrix<Double>]]
     public var bias: [Matrix<Double>]
 
@@ -169,7 +169,7 @@ public struct BasicModel: Network {
 
     // MARK: - Initializer
 
-    public init(layers: [Int], talent: any Talent) {
+    public init(layers: [Int], talent: TalentType) {
         self.talent = talent
         weights = []
         bias = []

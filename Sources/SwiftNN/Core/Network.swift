@@ -15,7 +15,9 @@
 // prediction and backpropagation during training.
 
 public protocol Network {
-    var talent: any Talent { get }
+    associatedtype TalentType: Talent
+
+    var talent: TalentType { get }
     var weights: [[Matrix<Double>]] { get set }
     var bias: [Matrix<Double>] { get set }
 

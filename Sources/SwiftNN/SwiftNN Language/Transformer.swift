@@ -10,21 +10,38 @@ import Foundation
 public struct Transformer: Codable {
     public let modelDimension: Int
 
-    public var vocabulary: Vocabulary
+    public let vocabularySize: Int
+
+    public var embeddings: EmbeddingLayer
     public var positionalEncoding: SinusoidalPositionalEncoding
     public var blocks: [TransformerBlock]
     public var outputProjection: OutputProjection
     
     public enum CodingKeys: String, CodingKey {
         case modelDimension
-        case vocabulary
+        case vocabularySize
+        case embeddings
         case positionalEncoding
         case blocks
         case outputProjection
     }
 
+    public init<Token>(
+        vocabulary: Vocabulary<Token>,
+        modelDimension: Int,
+        hiddenSize: Int,
+        numberOfBlocks: Int,
+    ) {
+        self.init(
+            vocabularySize: vocabulary.count,
+            modelDimension: modelDimension,
+            hiddenSize: hiddenSize,
+            numberOfBlocks: numberOfBlocks,
+        )
+    }
+
     public init(
-        vocabulary: Vocabulary,
+        vocabularySize: Int,
         modelDimension: Int,
         hiddenSize: Int,
         numberOfBlocks: Int,
@@ -34,8 +51,19 @@ public struct Transformer: Codable {
             "Model dimension must be greater than zero.",
         )
 
+        precondition(
+            vocabularySize > 0,
+            "Vocabulary size must be greater than zero.",
+        )
+
         self.modelDimension = modelDimension
-        self.vocabulary = vocabulary
+        self.vocabularySize = vocabularySize
+
+        embeddings = EmbeddingLayer(
+            vocabularySize: vocabularySize,
+            dims: modelDimension,
+        )
+
         positionalEncoding =
             SinusoidalPositionalEncoding()
 
@@ -58,18 +86,18 @@ public struct Transformer: Codable {
                 Matrix<Double>.random(
                     rows: modelDimension,
                     columns:
-                    vocabulary.idToToken.count,
+                    vocabularySize,
                 ),
                 bias:
                 Matrix<Double>(
                     rows: 1,
                     columns:
-                    vocabulary.idToToken.count,
+                    vocabularySize,
                     grid:
                     Array(
                         repeating: 0.0,
                         count:
-                        vocabulary.idToToken.count,
+                        vocabularySize,
                     ),
                 ),
             )
@@ -80,29 +108,25 @@ public struct Transformer: Codable {
     public mutating func forward(
         _ input: Matrix<Double>,
     ) -> Matrix<Double> {
-        var embeddings: [Double] = []
+        var embeddedValues: [Double] = []
 
         for value in input.grid {
             let id = Int(value)
 
             guard
-                let token =
-                vocabulary.token(for: id),
-                let embedding =
-                vocabulary.embedding(
-                    for: token,
-                )
+                id >= 0,
+                id < embeddings.embeddings.rows
             else {
                 continue
             }
 
-            embeddings.append(
-                contentsOf: embedding,
+            embeddedValues.append(
+                contentsOf: embeddings.embeddings[id],
             )
         }
 
         precondition(
-            embeddings.count ==
+            embeddedValues.count ==
                 input.rows * modelDimension,
             "Embedding output has incorrect dimensions.",
         )
@@ -111,7 +135,7 @@ public struct Transformer: Codable {
             Matrix(
                 rows: input.rows,
                 columns: modelDimension,
-                grid: embeddings,
+                grid: embeddedValues,
             )
 
         output =
@@ -295,14 +319,13 @@ public struct Transformer: Codable {
             guard
                 tokenID >= 0,
                 tokenID <
-                vocabulary.embeddings.embeddings.rows
+                embeddings.embeddings.rows
             else {
                 continue
             }
 
             for column in 0 ..< modelDimension {
-                vocabulary
-                    .embeddings
+                embeddings
                     .embeddings[
                         tokenID,
                         column,
