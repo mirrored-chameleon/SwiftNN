@@ -18,3 +18,15 @@ public struct WhitespaceTokenizer: Tokenizer, Codable {
         tokens.joined(separator: " ")
     }
 }
+
+public struct CharacterTokenizer: Tokenizer, Codable {
+    public init() {}
+
+    public func tokenize(_ input: String) -> [String] {
+        input.map(String.init)
+    }
+
+    public func detokenize(_ tokens: [String]) -> String {
+        tokens.joined()
+    }
+}

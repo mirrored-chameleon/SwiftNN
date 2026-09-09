@@ -233,9 +233,9 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
     }
 }
 
-public typealias LanguageModel = SequenceModel<WhitespaceTokenizer>
+public typealias LanguageModel = SequenceModel<public typealias LanguageModel = SequenceModel<CharacterTokenizer>>
 
-public extension SequenceModel where TokenizerType == WhitespaceTokenizer {
+public extension SequenceModel where TokenizerType == CharacterTokenizer {
     init(
         transformer: Transformer,
         vocabulary: TextVocabulary,
@@ -244,7 +244,7 @@ public extension SequenceModel where TokenizerType == WhitespaceTokenizer {
         self.init(
             transformer: transformer,
             vocabulary: vocabulary,
-            tokenizer: WhitespaceTokenizer(),
+            tokenizer: CharacterTokenizer(),
             learningRate: learningRate
         )
     }
