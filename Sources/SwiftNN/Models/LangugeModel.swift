@@ -14,15 +14,20 @@ public enum LanguageErrors: Error {
 
 public struct LanguageModel: Codable {
     public var transformer: Transformer
+    public var vocabulary: Vocabulary
     public let learningRate: Double
 
     public init(
         transformer: Transformer,
+        vocabulary: Vocabulary,
         learningRate: Double
     ) {
         self.transformer = transformer
+        self.vocabulary = vocabulary
         self.learningRate = learningRate
     }
+
+    // MARK: - Generation
 
     public mutating func generate(
         from input: String,
@@ -32,18 +37,16 @@ public struct LanguageModel: Codable {
             return input
         }
 
-        var tokens =
-        input.split(separator: " ")
-            .map(String.init)
+        var tokens = Array(input)
 
         for _ in 0 ..< maxTokens {
             var inputIDs: [Double] = []
 
             for token in tokens {
-                guard let id =
-                        transformer.vocabulary.id(for: token)
-                else {
-                    throw LanguageErrors.unknownToken(token)
+                let tokenString = String(token)
+
+                guard let id = vocabulary.id(for: tokenString) else {
+                    throw LanguageErrors.unknownToken(tokenString)
                 }
 
                 inputIDs.append(Double(id))
@@ -56,150 +59,169 @@ public struct LanguageModel: Codable {
             let input = Matrix<Double>(
                 rows: inputIDs.count,
                 columns: 1,
-                grid: inputIDs,
+                grid: inputIDs
             )
 
-            let prediction =
-            transformer.forward(input)
+            let prediction = transformer.forward(input)
 
-            let lastRow =
-            prediction.rows - 1
+            let lastRow = prediction.rows - 1
+            let logits = prediction[lastRow]
 
-            let logits =
-            prediction[lastRow]
-
-            guard let nextTokenID =
-                    logits.indices.max(
-                        by: {
-                            logits[$0] < logits[$1]
-                        },
-                    )
-            else {
+            guard let nextTokenID = logits.indices.max(by: {
+                logits[$0] < logits[$1]
+            }) else {
                 break
             }
 
-            guard let nextToken =
-                    transformer.vocabulary.token(
-                        for: nextTokenID,
-                    )
-            else {
+            guard let nextToken = vocabulary.token(
+                for: nextTokenID
+            ) else {
                 break
             }
 
-            tokens.append(nextToken)
-
-            if nextToken == "<end>" {
+            guard let character = nextToken.first else {
                 break
             }
+
+            tokens.append(character)
         }
 
-        return tokens.joined(separator: " ")
+        return String(tokens)
     }
 
+    // MARK: - Training
+
     public mutating func train(
-        on examples: [(input: String, target: String)],
+        on examples: [
+            (
+                input: String,
+                target: String
+            )
+        ],
         epochs: Int
     ) {
+        guard epochs > 0 else {
+            return
+        }
+
+        let endToken = "\u{0003}"
+
+        guard let endTokenID = vocabulary.id(
+            for: endToken
+        ) else {
+            return
+        }
 
         for epoch in 0 ..< epochs {
             var totalLoss = 0.0
+            var tokenCount = 0
 
-            for example in examples {
-                let inputTokens =
-                example.input.split(separator: " ")
-
-                let targetTokens =
-                example.target.split(separator: " ")
+            for example in examples.shuffled() {
+                let inputCharacters = Array(example.input)
+                let targetCharacters = Array(example.target)
 
                 var inputIDs: [Double] = []
 
-                for token in inputTokens {
-                    guard let id =
-                            transformer.vocabulary.id(
-                                for: String(token),
-                            )
-                    else {
+                for character in inputCharacters {
+                    let token = String(character)
+
+                    guard let id = vocabulary.id(
+                        for: token
+                    ) else {
                         continue
                     }
 
                     inputIDs.append(Double(id))
                 }
 
-                var targetIDs: [Double] = []
-
-                for token in targetTokens {
-                    guard let id =
-                            transformer.vocabulary.id(
-                                for: String(token),
-                            )
-                    else {
-                        continue
-                    }
-
-                    targetIDs.append(Double(id))
-                }
-
-                guard
-                    !inputIDs.isEmpty,
-                    !targetIDs.isEmpty
-                else {
+                guard !inputIDs.isEmpty else {
                     continue
                 }
 
+                var targetIDs: [Int] = []
+
+                for character in targetCharacters {
+                    let token = String(character)
+
+                    guard let id = vocabulary.id(
+                        for: token
+                    ) else {
+                        continue
+                    }
+
+                    targetIDs.append(id)
+                }
+
+                guard !targetIDs.isEmpty else {
+                    continue
+                }
+
+                var sequenceIDs = inputIDs
+
+                sequenceIDs.append(
+                    contentsOf: targetIDs.map(Double.init)
+                )
+
+                var targets = targetIDs
+                targets.append(endTokenID)
+
                 let input = Matrix<Double>(
-                    rows: inputIDs.count,
+                    rows: sequenceIDs.count,
                     columns: 1,
-                    grid: inputIDs,
+                    grid: sequenceIDs
                 )
 
-                let targetID =
-                targetIDs[targetIDs.count - 1]
-
-                let vocabularySize =
-                transformer.vocabulary.idToToken.count
-
-                var target = Matrix<Double>(
-                    rows: 1,
-                    columns: vocabularySize,
-                    grid: Array(
-                        repeating: 0.0,
-                        count: vocabularySize,
-                    ),
-                )
-
-                target[0, Int(targetID)] = 1.0
-
-                let loss =
-                transformer.trainStep(
+                let loss = transformer.trainSequence(
                     input: input,
-                    target: target,
-                    learningRate: learningRate,
+                    targets: targets,
+                    learningRate: learningRate
                 )
 
                 totalLoss += loss
+                tokenCount += targets.count
             }
 
+            let averageLoss = tokenCount > 0
+                ? totalLoss / Double(tokenCount)
+                : 0.0
+
             print(
-                "Epoch \(epoch) Loss: \(totalLoss)",
+                "Epoch \(epoch) Loss: \(totalLoss) " +
+                "Average Loss: \(averageLoss)"
             )
         }
     }
 
+    // MARK: - Export
+
     public func export() throws -> String {
         let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+
+        encoder.outputFormatting = [
+            .prettyPrinted,
+            .sortedKeys
+        ]
 
         let data = try encoder.encode(self)
 
-        guard let json = String(data: data, encoding: .utf8) else {
+        guard let json = String(
+            data: data,
+            encoding: .utf8
+        ) else {
             throw LanguageErrors.unsupportedData
         }
 
         return json
     }
 
-    public static func `import`(from json: String) throws -> LanguageModel {
-        guard let data = json.data(using: .utf8) else {
+    // MARK: - Import
+
+    public static func `import`(
+        from json: String
+    ) throws -> LanguageModel {
+        guard let data = json.data(
+            using: .utf8
+        ) else {
             throw LanguageErrors.unsupportedData
         }
 

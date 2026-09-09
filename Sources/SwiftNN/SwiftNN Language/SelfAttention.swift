@@ -12,7 +12,6 @@ public protocol Attention {
         _ input: Matrix<Double>,
     ) -> Matrix<Double>
 }
-
 public struct SelfAttention: Attention, Codable {
     public var queryWeights: Matrix<Double>
     public var keyWeights: Matrix<Double>
@@ -67,11 +66,16 @@ public struct SelfAttention: Attention, Codable {
         let attentionWeights = Matrix(
             rows: scaledScores.rows,
             columns: scaledScores.columns,
-            grid:
-            (0 ..< scaledScores.rows).flatMap { row in
-                softmax(
-                    scaledScores[row],
-                )
+            grid: (0..<scaledScores.rows).flatMap { row in
+                let maskedRow = (0..<scaledScores.columns).map { column in
+                    if column > row {
+                        return -Double.infinity
+                    }
+
+                    return scaledScores[row, column]
+                }
+
+                return softmax(maskedRow)
             },
         )
 
@@ -93,7 +97,7 @@ public struct SelfAttention: Attention, Codable {
         guard
             let value = lastValue,
             let attentionWeights =
-            lastAttentionWeights
+                lastAttentionWeights
         else {
             fatalError(
                 "SelfAttention backward called before forward.",
@@ -121,7 +125,7 @@ public struct SelfAttention: Attention, Codable {
     ) -> Matrix<Double> {
         guard
             let attentionWeights =
-            lastAttentionWeights
+                lastAttentionWeights
         else {
             fatalError(
                 "Softmax backward called before forward.",
@@ -134,12 +138,11 @@ public struct SelfAttention: Attention, Codable {
             grid: Array(
                 repeating: 0.0,
                 count:
-                gradient.rows *
-                    gradient.columns,
+                    gradient.rows * gradient.columns,
             ),
         )
 
-        for row in 0 ..< gradient.rows {
+        for row in 0..<gradient.rows {
             let weights =
                 attentionWeights[row]
 
@@ -148,19 +151,20 @@ public struct SelfAttention: Attention, Codable {
 
             var dotProduct = 0.0
 
-            for column in 0 ..< gradient.columns {
+            for column in 0..<gradient.columns {
                 dotProduct +=
-                    incoming[column] *
-                    weights[column]
+                    incoming[column] * weights[column]
             }
 
-            for column in 0 ..< gradient.columns {
-                result[row, column] =
-                    weights[column] *
-                    (
-                        incoming[column]
-                            - dotProduct
-                    )
+            for column in 0..<gradient.columns {
+                if column > row {
+                    result[row, column] = 0.0
+                } else {
+                    result[row, column] =
+                        weights[column]
+                        * (incoming[column]
+                            - dotProduct)
+                }
             }
         }
 
@@ -231,36 +235,30 @@ public struct SelfAttention: Attention, Codable {
         //
         // dW = Xᵀ × dOutput
         let queryWeightGradient =
-            input.transposed *
-            queryGradient
+            input.transposed * queryGradient
 
         let keyWeightGradient =
-            input.transposed *
-            keyGradient
+            input.transposed * keyGradient
 
         let valueWeightGradient =
-            input.transposed *
-            valueGradient
+            input.transposed * valueGradient
 
         // dX = dOutput × Wᵀ
         let queryInputGradient =
-            queryGradient *
-            queryWeights.transposed
+            queryGradient * queryWeights.transposed
 
         let keyInputGradient =
-            keyGradient *
-            keyWeights.transposed
+            keyGradient * keyWeights.transposed
 
         let valueInputGradient =
-            valueGradient *
-            valueWeights.transposed
+            valueGradient * valueWeights.transposed
 
         // All three branches originate from
         // the same input.
         let inputGradient =
             queryInputGradient
-                + keyInputGradient
-                + valueInputGradient
+            + keyInputGradient
+            + valueInputGradient
 
         return (
             queryWeightGradient,

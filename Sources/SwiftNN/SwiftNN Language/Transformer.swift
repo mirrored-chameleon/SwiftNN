@@ -271,6 +271,123 @@ public struct Transformer: Codable {
         return loss
     }
 
+        // MARK: - Sequence Training
+
+    public mutating func trainSequence(
+        input: Matrix<Double>,
+        targets: [Int],
+        learningRate: Double
+    ) -> Double {
+        guard !targets.isEmpty else {
+            return 0.0
+        }
+
+        let prediction = forward(input)
+
+        // The first target is predicted from the final
+        // input token.
+        let firstTargetRow = input.rows - targets.count - 1
+
+        precondition(
+            firstTargetRow >= 0,
+            "Input sequence is too short for the supplied targets."
+        )
+
+        precondition(
+            firstTargetRow + targets.count <= prediction.rows,
+            "Target sequence exceeds prediction length."
+        )
+
+        var fullGradient = Matrix<Double>(
+            rows: prediction.rows,
+            columns: prediction.columns,
+            grid: Array(
+                repeating: 0.0,
+                count:
+                    prediction.rows *
+                    prediction.columns
+            )
+        )
+
+        var totalLoss = 0.0
+
+        for targetIndex in targets.indices {
+            let predictionRow =
+                firstTargetRow + targetIndex
+
+            let targetID = targets[targetIndex]
+
+            guard
+                targetID >= 0,
+                targetID < prediction.columns
+            else {
+                continue
+            }
+
+            let logits = prediction[predictionRow]
+
+            let maximum = logits.max() ?? 0.0
+
+            let exponentials = logits.map {
+                exp($0 - maximum)
+            }
+
+            let total = exponentials.reduce(0.0, +)
+
+            let probabilities = exponentials.map {
+                $0 / total
+            }
+
+            totalLoss -= log(
+                max(
+                    probabilities[targetID],
+                    1e-12
+                )
+            )
+
+            // dL/dlogits = probabilities - target
+            for column in 0 ..< prediction.columns {
+                fullGradient[predictionRow, column] =
+                    probabilities[column]
+            }
+
+            fullGradient[predictionRow, targetID] -= 1.0
+        }
+
+        let outputGradients =
+            outputProjection.backward(fullGradient)
+
+        subtractScaled(
+            &outputProjection.weights,
+            gradient: outputGradients.weightGradient,
+            learningRate: learningRate
+        )
+
+        subtractScaled(
+            &outputProjection.bias,
+            gradient: outputGradients.biasGradient,
+            learningRate: learningRate
+        )
+
+        var blockGradient =
+            outputGradients.inputGradient
+
+        for index in blocks.indices.reversed() {
+            blockGradient = blocks[index].backward(
+                blockGradient,
+                learningRate: learningRate
+            )
+        }
+
+        updateEmbeddings(
+            input: input,
+            gradient: blockGradient,
+            learningRate: learningRate
+        )
+
+        return totalLoss / Double(targets.count)
+    }
+
     // MARK: - Embedding Training
 
     private mutating func updateEmbeddings(
