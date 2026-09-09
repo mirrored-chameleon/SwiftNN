@@ -233,7 +233,7 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
     }
 }
 
-public typealias LanguageModel = SequenceModel<public typealias LanguageModel = SequenceModel<CharacterTokenizer>>
+public typealias LanguageModel = SequenceModel<CharacterTokenizer>
 
 public extension SequenceModel where TokenizerType == CharacterTokenizer {
     init(
