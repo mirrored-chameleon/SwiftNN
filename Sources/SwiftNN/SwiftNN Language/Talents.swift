@@ -13,9 +13,9 @@ public struct EnglishTalent: Talent {
 
     public var tokens: [String] = []
 
-    public var vocabulary: Vocabulary
+    public var vocabulary: TextVocabulary
 
-    public init(vocabulary: Vocabulary) {
+    public init(vocabulary: TextVocabulary) {
         self.vocabulary = vocabulary
         tokens = vocabulary.idToToken
     }
