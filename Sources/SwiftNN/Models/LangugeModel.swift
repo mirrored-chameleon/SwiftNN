@@ -68,6 +68,7 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
             let prediction = transformer.forward(input)
             let lastRow = prediction.rows - 1
             let logits = prediction[lastRow]
+
             guard let nextTokenID = logits.indices.max(by: {
                 logits[$0] < logits[$1]
             }) else {
@@ -93,7 +94,12 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
     // MARK: - Training
 
     public mutating func train(
-        on examples: [(input: TokenizerType.Input, target: TokenizerType.Input)],
+        on examples: [
+            (
+                input: TokenizerType.Input,
+                target: TokenizerType.Input
+            )
+        ],
         epochs: Int
     ) {
         guard epochs > 0 else {
@@ -122,19 +128,9 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
                     sequenceIDs.append(Double(id))
                 }
 
-                        continue
-                    }
-
-                    sequenceIDs.append(Double(id))
-                }
-
                 guard !sequenceIDs.isEmpty else {
                     continue
                 }
-                    continue
-                }
-
-                var targetIDs: [Int] = []
 
                 var targetIDs: [Int] = []
 
@@ -149,20 +145,15 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
                 guard !targetIDs.isEmpty else {
                     continue
                 }
-                        continue
-                    }
 
-                    targetIDs.append(id)
-                }
-
-                guard !targetIDs.isEmpty else {
-                    continue
-                }
-
+                // Include the target sequence in the model input so that
+                // each target position can predict the following token.
                 sequenceIDs.append(
                     contentsOf: targetIDs.map(Double.init)
                 )
 
+                // The model predicts each target token, followed by
+                // the end token.
                 var targets = targetIDs
                 targets.append(endTokenID)
 
@@ -172,6 +163,8 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
                     grid: sequenceIDs
                 )
 
+                // Train the complete sequence in one forward/backward pass
+                // instead of running a separate trainStep for every token.
                 let loss = transformer.trainSequence(
                     input: input,
                     targets: targets,
@@ -197,7 +190,6 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
 
     public func export() throws -> String {
         let encoder = JSONEncoder()
-
         encoder.outputFormatting = [
             .prettyPrinted,
             .sortedKeys
@@ -215,9 +207,11 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
         return json
     }
 
+    // MARK: - Import
+
     public static func `import`(
         from json: String
-    ) throws -> LanguageModel {
+    ) throws -> SequenceModel {
         guard let data = json.data(
             using: .utf8
         ) else {
