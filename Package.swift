@@ -15,5 +15,9 @@ let package = Package(
         .target(
             name: "SwiftNN",
         ),
+        .testTarget(
+            name: "SwiftNNTests",
+            dependencies: ["SwiftNN"],
+        ),
     ],
 )

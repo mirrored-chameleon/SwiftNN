@@ -310,7 +310,7 @@ public struct Transformer: Codable {
 
         // The first target is predicted from the final
         // input token.
-        let firstTargetRow = input.rows - targets.count - 1
+        let firstTargetRow = input.rows - targets.count
 
         precondition(
             firstTargetRow >= 0,
@@ -377,6 +377,11 @@ public struct Transformer: Codable {
 
             fullGradient[predictionRow, targetID] -= 1.0
         }
+
+        // `totalLoss` is averaged below, so its gradient must be averaged
+        // before applying an update as well. This keeps longer character
+        // sequences from producing proportionally larger updates.
+        fullGradient = fullGradient / Double(targets.count)
 
         let outputGradients =
             outputProjection.backward(fullGradient)
