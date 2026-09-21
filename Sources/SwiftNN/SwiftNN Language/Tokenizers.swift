@@ -8,6 +8,9 @@ import Foundation
 public struct WhitespaceTokenizer: Tokenizer, Codable {
     public init() {}
 
+    public var conversationSeparator: String? { "|" }
+    public var unknownToken: String? { "<unk>" }
+
     public func tokenize(_ input: String) -> [String] {
         input
             .split(separator: " ")
@@ -21,6 +24,9 @@ public struct WhitespaceTokenizer: Tokenizer, Codable {
 
 public struct CharacterTokenizer: Tokenizer, Codable {
     public init() {}
+
+    public var conversationSeparator: String? { "|" }
+    public var unknownToken: String? { "<unk>" }
 
     public func tokenize(_ input: String) -> [String] {
         input.map(String.init)

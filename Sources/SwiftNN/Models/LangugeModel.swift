@@ -42,14 +42,27 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
 
         var tokens = tokenizer.tokenize(input)
 
+          if let separator = tokenizer.conversationSeparator,
+              tokens.last != separator,
+              let separatorID = vocabulary.id(for: separator),
+              let separatorToken = vocabulary.token(for: separatorID)
+        {
+                tokens.append(separatorToken)
+        }
+
         for _ in 0 ..< maxTokens {
             var inputIDs: [Double] = []
 
             for token in tokens {
-                guard let id = vocabulary.id(for: token) else {
-                    throw LanguageErrors.unknownToken(
-                        String(describing: token)
-                    )
+                let id: Int
+                if let knownID = vocabulary.id(for: token) {
+                    id = knownID
+                } else if let unknownToken = tokenizer.unknownToken,
+                          let unknownID = vocabulary.id(for: unknownToken)
+                {
+                    id = unknownID
+                } else {
+                    throw LanguageErrors.unknownToken(String(describing: token))
                 }
 
                 inputIDs.append(Double(id))
@@ -67,7 +80,17 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
 
             let prediction = transformer.forward(input)
             let lastRow = prediction.rows - 1
-            let logits = prediction[lastRow]
+            var logits = prediction[lastRow]
+
+            if tokens.count >= 3,
+               tokens[tokens.count - 1] == tokens[tokens.count - 2],
+               tokens[tokens.count - 2] == tokens[tokens.count - 3],
+               let repeatedTokenID = vocabulary.id(
+                   for: tokens[tokens.count - 1]
+               )
+            {
+                logits[repeatedTokenID] = -Double.infinity
+            }
 
             guard let nextTokenID = logits.indices.max(by: {
                 logits[$0] < logits[$1]
@@ -121,11 +144,19 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
                 var sequenceIDs: [Double] = []
 
                 for token in inputTokens {
-                    guard let id = vocabulary.id(for: token) else {
-                        continue
-                    }
+                    let id = vocabulary.id(for: token)
+                        ?? tokenizer.unknownToken.flatMap(vocabulary.id)
+
+                    guard let id else { continue }
 
                     sequenceIDs.append(Double(id))
+                }
+
+                     if let separator = tokenizer.conversationSeparator,
+                         inputTokens.last != separator,
+                         let separatorID = vocabulary.id(for: separator)
+                {
+                    sequenceIDs.append(Double(separatorID))
                 }
 
                 guard !sequenceIDs.isEmpty else {
@@ -135,9 +166,10 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
                 var targetIDs: [Int] = []
 
                 for token in targetTokens {
-                    guard let id = vocabulary.id(for: token) else {
-                        continue
-                    }
+                    let id = vocabulary.id(for: token)
+                        ?? tokenizer.unknownToken.flatMap(vocabulary.id)
+
+                    guard let id else { continue }
 
                     targetIDs.append(id)
                 }
@@ -171,7 +203,7 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
                     learningRate: learningRate
                 )
 
-                totalLoss += loss
+                totalLoss += loss * Double(targets.count)
                 tokenCount += targets.count
             }
 
@@ -226,6 +258,7 @@ public struct SequenceModel<TokenizerType: Tokenizer>: Codable {
 }
 
 public typealias LanguageModel = SequenceModel<CharacterTokenizer>
+public typealias WordLanguageModel = SequenceModel<WhitespaceTokenizer>
 
 public extension SequenceModel where TokenizerType == CharacterTokenizer {
     init(

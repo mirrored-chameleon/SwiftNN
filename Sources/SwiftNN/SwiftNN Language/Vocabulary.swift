@@ -42,7 +42,12 @@ public struct Vocabulary<Token: Hashable & Codable>: Codable {
         tokenToId = [:]
         idToToken = []
 
-        for (id, token) in tokens.enumerated() {
+        for token in tokens {
+            guard tokenToId[token] == nil else {
+                continue
+            }
+
+            let id = idToToken.count
             tokenToId[token] = id
             idToToken.append(token)
         }

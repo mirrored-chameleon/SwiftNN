@@ -33,8 +33,12 @@ public func subtractScaled(
 
     for row in 0 ..< matrix.rows {
         for column in 0 ..< matrix.columns {
+            let limitedGradient = clipped(
+                gradient[row, column],
+                limit: 1.0,
+            )
             matrix[row, column] -=
-                learningRate * gradient[row, column]
+                learningRate * limitedGradient
         }
     }
 }

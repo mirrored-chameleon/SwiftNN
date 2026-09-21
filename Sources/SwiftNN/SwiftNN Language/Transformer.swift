@@ -83,7 +83,7 @@ public struct Transformer: Codable {
         outputProjection =
             OutputProjection(
                 weights:
-                Matrix<Double>.random(
+                randomWeights(
                     rows: modelDimension,
                     columns:
                     vocabularySize,
@@ -327,94 +327,71 @@ public struct Transformer: Codable {
             columns: prediction.columns,
             grid: Array(
                 repeating: 0.0,
-                count:
-                    prediction.rows *
-                    prediction.columns
-            )
+                count: prediction.rows * prediction.columns,
+            ),
         )
 
         var totalLoss = 0.0
+        var trainedTargets = 0
 
         for targetIndex in targets.indices {
-            let predictionRow =
-                firstTargetRow + targetIndex
-
+            let predictionRow = firstTargetRow + targetIndex
             let targetID = targets[targetIndex]
 
-            guard
-                targetID >= 0,
-                targetID < prediction.columns
-            else {
+            guard targetID >= 0, targetID < vocabularySize else {
                 continue
             }
 
             let logits = prediction[predictionRow]
-
             let maximum = logits.max() ?? 0.0
-
-            let exponentials = logits.map {
-                exp($0 - maximum)
-            }
-
+            let exponentials = logits.map { exp($0 - maximum) }
             let total = exponentials.reduce(0.0, +)
+            let probabilities = exponentials.map { $0 / total }
 
-            let probabilities = exponentials.map {
-                $0 / total
-            }
+            totalLoss -= log(max(probabilities[targetID], 1e-12))
 
-            totalLoss -= log(
-                max(
-                    probabilities[targetID],
-                    1e-12
-                )
-            )
-
-            // dL/dlogits = probabilities - target
             for column in 0 ..< prediction.columns {
-                fullGradient[predictionRow, column] =
-                    probabilities[column]
+                fullGradient[predictionRow, column] = probabilities[column]
             }
 
             fullGradient[predictionRow, targetID] -= 1.0
+            trainedTargets += 1
         }
 
-        // `totalLoss` is averaged below, so its gradient must be averaged
-        // before applying an update as well. This keeps longer character
-        // sequences from producing proportionally larger updates.
-        fullGradient = fullGradient / Double(targets.count)
+        guard trainedTargets > 0 else {
+            return 0.0
+        }
 
-        let outputGradients =
-            outputProjection.backward(fullGradient)
+        let outputGradients = outputProjection.backward(fullGradient)
 
         subtractScaled(
             &outputProjection.weights,
             gradient: outputGradients.weightGradient,
-            learningRate: learningRate
+            learningRate: learningRate,
         )
 
         subtractScaled(
             &outputProjection.bias,
             gradient: outputGradients.biasGradient,
-            learningRate: learningRate
+            learningRate: learningRate,
         )
 
-        var blockGradient =
-            outputGradients.inputGradient
+        var blockGradient = outputGradients.inputGradient
 
         for index in blocks.indices.reversed() {
             blockGradient = blocks[index].backward(
                 blockGradient,
-                learningRate: learningRate
+                learningRate: learningRate,
             )
         }
 
         updateEmbeddings(
             input: input,
             gradient: blockGradient,
-            learningRate: learningRate
+            learningRate: learningRate,
         )
 
-        return totalLoss / Double(targets.count)
+        return totalLoss / Double(trainedTargets)
     }
 
     // MARK: - Embedding Training
